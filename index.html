@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kenangkala Studio — Command Board</title>
+<style>
+  :root{--bg:#141518;--side:#191b1f;--panel:#1d1f24;--card:#26282f;--border:#33363f;
+    --text:#e8eaee;--muted:#9aa0ab;--accent:#ffb340;--blue:#4fc3f7;--purple:#b388ff;--green:#66d97f;--red:#ff6b6b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;height:100vh;display:flex;overflow:hidden}
+  h1{font-size:18px}h2{font-size:15px}h3{font-size:13px}
+  nav{width:212px;background:var(--side);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+  .logo{padding:6px 10px 14px;font-size:15px;font-weight:700}
+  .logo span{color:var(--accent)}
+  .clock{font-size:11px;color:var(--muted);padding:0 10px 12px}
+  .nav-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border:none;background:none;color:var(--muted);font-size:13px;border-radius:8px;cursor:pointer;text-align:left;width:100%}
+  .nav-btn:hover{background:var(--card);color:var(--text)}
+  .nav-btn.active{background:var(--card);color:var(--accent);font-weight:600}
+  .nav-count{margin-left:auto;font-size:11px;background:var(--border);border-radius:10px;padding:1px 8px;color:var(--text)}
+  .side-note{margin-top:auto;font-size:10px;color:#6d727d;padding:10px}
+  main{flex:1;overflow-y:auto;padding:22px 26px}
+  .view{display:none}.view.active{display:block}
+  .view-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+  .view-head .sub{color:var(--muted);font-size:12px;width:100%;margin-top:-6px}
+  select,input,textarea{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit}
+  input::placeholder,textarea::placeholder{color:#6d727d}
+  .btn{background:var(--accent);color:#1a1408;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer}
+  .btn:hover{filter:brightness(1.1)}
+  .btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border);font-weight:500;padding:6px 12px;font-size:12px;border-radius:8px;cursor:pointer}
+  .btn-sm{padding:4px 10px;font-size:11px}
+  .cards{display:flex;flex-wrap:wrap;gap:12px}
+  .card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:14px;flex:1 1 260px;min-width:250px;max-width:400px}
+  .card.b{border-left-color:var(--blue)}.card.p{border-left-color:var(--purple)}.card.g{border-left-color:var(--green)}
+  .title{font-weight:600;font-size:14px;margin-bottom:4px}
+  .meta{font-size:12px;color:var(--muted);line-height:1.6}
+  .meta b{color:var(--text);font-weight:500}
+  .foot{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .status{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;border:none;display:inline-block}
+  .s-planned,.s-new,.s-idea{background:#2e3a52;color:#7fb2ff}
+  .s-progress{background:#3a3222;color:#ffb340}
+  .s-done,.s-ready{background:#213626;color:var(--green)}
+  .s-booked,.s-quote{background:#2b2440;color:var(--purple)}
+  .s-followup{background:#3d2a2a;color:#ff9a7f}
+  .del{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px}
+  .del:hover{color:var(--red)}
+  .empty{color:var(--muted);font-size:13px;padding:14px;border:1px dashed var(--border);border-radius:10px;width:100%;text-align:center}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;flex:1;min-width:150px}
+  .stat b{font-size:28px;display:block}.stat small{color:var(--muted);font-size:12px}
+  .stat.accent b{color:var(--accent)}.stat.blue b{color:var(--blue)}.stat.purple b{color:var(--purple)}.stat.green b{color:var(--green)}
+  .add-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .add-row input,.add-row select{flex:0 1 170px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px;border-bottom:1px solid var(--border)}
+  td{padding:9px 8px;border-bottom:1px solid #23252b;vertical-align:top}
+  .tbl-wrap{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:6px 12px 2px;overflow-x:auto}
+  .tag{font-size:11px;background:var(--border);border-radius:6px;padding:2px 8px;display:inline-block;margin:1px 2px 1px 0}
+  .tag.ch{background:#213640;color:var(--blue)}
+  .tag.niche{background:#2b2440;color:var(--purple)}
+  .tag.off{background:#3d2a2a;color:#ff9a7f;text-decoration:line-through}
+  img.ph{width:100%;height:130px;object-fit:cover;border-radius:8px;display:block;background:#1a1c20;border:1px solid var(--border)}
+  .brief{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:6px}
+  .brief h3{color:var(--accent);margin:12px 0 6px}.brief h3:first-child{margin-top:0}
+  .brief li{margin-left:18px;font-size:13px;color:var(--muted);line-height:1.8}
+  .brief img{max-width:230px;margin:4px 8px 4px 0;border-radius:8px;vertical-align:top}
+  .picgrid{display:flex;gap:10px;flex-wrap:wrap}
+  .picgrid figure{width:210px;font-size:11px;color:var(--muted)}
+  .maplink{color:var(--blue);font-size:13px;text-decoration:none}
+  a{color:var(--blue);text-decoration:none}
+  .pose-card img{height:120px}
+  .quote-out{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;white-space:pre-wrap;line-height:1.7}
+  .row2{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.row2>div{flex:1;min-width:190px}
+  label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+  .ck{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:13px;cursor:pointer}
+  .ck.done{opacity:.55;text-decoration:line-through}
+  .gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .gal .card{max-width:none;min-width:0;padding:10px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🕯 Kenangkala <span>Studio</span></div>
+  <div class="clock" id="clock"></div>
+  <button class="nav-btn active" data-view="dashboard">🏠 Dashboard</button>
+  <button class="nav-btn" data-view="jobs">🗓 Jobs <span class="nav-count" id="nc-jobs">0</span></button>
+  <button class="nav-btn" data-view="leads">💬 Leads <span class="nav-count" id="nc-leads">0</span></button>
+  <button class="nav-btn" data-view="content">💡 Content <span class="nav-count" id="nc-content">0</span></button>
+  <button class="nav-btn" data-view="bengkel">🛠 Bengkel <span class="nav-count" id="nc-bengkel">0</span></button>
+  <button class="nav-btn" data-view="packages">💰 Packages</button>
+  <button class="nav-btn" data-view="poses">🧍 Pose DB <span class="nav-count" id="nc-poses">0</span></button>
+  <button class="nav-btn" data-view="trends">📈 Trends</button>
+  <div class="side-note">Sample data only — nothing is saved between visits.</div>
+</nav>
+
+<main>
+<!-- DASHBOARD -->
+<div class="view active" id="view-dashboard">
+  <div class="view-head"><h1>🏠 Dashboard</h1><div class="sub">Quick overview — details live in each tab.</div></div>
+  <div class="cards" style="margin-bottom:18px">
+    <div class="stat accent"><b id="d-jobs">0</b><small>Jobs today</small></div>
+    <div class="stat blue"><b id="d-leads">0</b><small>Leads</small></div>
+    <div class="stat purple"><b id="d-content">0</b><small>Content ideas</small></div>
+    <div class="stat green"><b id="d-done">0</b><small>Jobs wrapped</small></div>
+  </div>
+  <h2 style="margin-bottom:8px">Today at a glance</h2>
+  <div class="tbl-wrap"><table><tbody id="dash-body"></tbody></table></div>
+</div>
+
+<!-- JOBS -->
+<div class="view" id="view-jobs">
+  <div class="view-head">
+    <h1>🗓 Jobs</h1>
+    <span class="status s-progress">Status updates itself by the live clock ⏱</span>
+    <div class="sub">Open a job to see directions, location photos, pose flow and the niche shotlist. "⏰ Adjust" shifts a job's live window.</div>
+  </div>
+  <div class="add-row">
+    <input id="in-job-name" placeholder="Client / job name"><input id="in-job-venue" placeholder="Venue">
+    <input id="in-job-date" placeholder="Date (e.g. Today)">
+    <select id="in-job-niche"><option>Wedding</option><option>Solemnisation</option><option>Tunang</option><option>Convo</option><option>Food</option><option>Portraiture</option><option>Family</option></select>
+    <input id="in-job-start" type="time" title="Start time"><input id="in-job-end" type="time" title="End time">
+    <button class="btn" onclick="addJob()">+ Add Job</button>
+  </div>
+  <div class="cards" id="list-jobs"></div>
+  <div id="job-detail"></div>
+</div>
+
+<!-- LEADS -->
+<div class="view" id="view-leads">
+  <div class="view-head">
+    <h1>💬 Leads & Enquiries</h1>
+    <select id="filter-leads" onchange="renderLeads()"><option value="all">All statuses</option><option>New</option><option>Follow Up</option><option>Quote Sent</option><option>Booked</option></select>
+    <div class="sub">Reply buttons open WhatsApp Web / Instagram / Threads directly with a ready-made draft. Update the chat summary here after reviewing.</div>
+  </div>
+  <div class="add-row">
+    <input id="in-lead-name" placeholder="Lead name"><input id="in-lead-phone" placeholder="WhatsApp no. (6012…)"><input id="in-lead-ig" placeholder="IG / Threads handle">
+    <input id="in-lead-service" placeholder="Service / niche"><select id="in-lead-status"><option>New</option><option>Follow Up</option><option>Quote Sent</option><option>Booked</option></select>
+    <button class="btn" onclick="addLead()">+ Add Lead</button>
+  </div>
+  <div class="cards" id="list-leads"></div>
+</div>
+
+<!-- CONTENT -->
+<div class="view" id="view-content">
+  <div class="view-head">
+    <h1>💡 Content Gallery</h1>
+    <select id="filter-content" onchange="renderContent()"><option value="all">All</option><option>Idea</option><option>In Bengkel</option><option>Posted</option></select>
+    <div class="sub">Your visual idea board. ⤴ moves a killer shot into the Pose DB; 🛠 sends a complex piece to the Bengkel with a completion checklist.</div>
+  </div>
+  <div class="add-row">
+    <input id="in-c-title" placeholder="Shot / content idea"><input id="in-c-platform" placeholder="Platform">
+    <input id="in-c-due" placeholder="Due date"><select id="in-c-cx"><option value="simple">Simple — shoot & post</option><option value="complex">Complex — needs Bengkel</option></select>
+    <button class="btn" onclick="addContent()">+ Add Idea</button>
+  </div>
+  <div class="gal" id="list-content"></div>
+</div>
+
+<!-- BENGKEL -->
+<div class="view" id="view-bengkel">
+  <div class="view-head"><h1>🛠 Bengkel — Content Workshop</h1><div class="sub">Each draft = one piece of content being produced. Tick the checklist as the raw footage / edits arrive, then mark it ready for posting or Meta Ads.</div></div>
+  <div class="cards" id="list-bengkel"></div>
+</div>
+
+<!-- PACKAGES -->
+<div class="view" id="view-packages">
+  <div class="view-head"><h1>💰 Packages & Quotations</h1><div class="sub">Packages grouped by niche with design templates. Build a custom quote on the right, finalize, then push it to a lead for review.</div></div>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+    <div style="flex:1;min-width:340px">
+      <h2 style="margin-bottom:8px">Package database (by niche)</h2>
+      <div id="pkg-groups"></div>
+      <div class="add-row" style="margin-top:10px">
+        <select id="in-pkg-niche"><option>Wedding</option><option>Solemnisation</option><option>Tunang</option><option>Convo</option><option>Food</option><option>Portraiture</option></select>
+        <input id="in-pkg-name" placeholder="Package name" style="flex:1 1 150px"><input id="in-pkg-inc" placeholder="Includes" style="flex:1 1 170px">
+        <input id="in-pkg-price" type="number" placeholder="RM" style="max-width:90px"><button class="btn" onclick="addPackage()">+ Add</button>
+      </div>
+    </div>
+    <div style="flex:1;min-width:330px">
+      <h2 style="margin-bottom:8px">Custom & finalize</h2>
+      <div class="row2">
+        <div><label>Lead to quote</label><select id="q-lead" style="width:100%"></select></div>
+        <div><label>Package base</label><select id="q-pkg" style="width:100%" onchange="renderPkgBuilder()"></select></div>
+      </div>
+      <label>Custom items (click to toggle)</label>
+      <div class="pill-row" id="q-addons" style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px"></div>
+      <div class="row2">
+        <div><label>Discount (RM)</label><input id="q-disc" type="number" value="0" style="width:100%"></div>
+        <div><label>Design template</label><select id="q-template" style="width:100%"><option>Classic Border</option><option>Modern Accent</option><option>Minimal Mono</option></select></div>
+      </div>
+      <button class="btn" onclick="renderQuote()">Preview quotation</button>
+      <button class="btn btn-ghost" style="margin-left:8px" onclick="pushQuote()">Push to lead for review ✓</button>
+      <div class="quote-out" id="quote-out" style="margin-top:12px">Build the quote, preview, then push it to the lead.</div>
+    </div>
+  </div>
+</div>
+
+<!-- POSE DB -->
+<div class="view" id="view-poses">
+  <div class="view-head">
+    <h1>🧍 Pose Database</h1>
+    <select id="pose-filter-niche" onchange="renderPoses()"><option value="all">All niches</option><option>Wedding</option><option>Solemnisation</option><option>Tunang</option><option>Convo</option><option>Food</option><option>Portraiture</option><option>Family</option></select>
+    <select id="pose-filter-active" onchange="renderPoses()"><option value="all">Active + inactive</option><option value="on">Active only</option></select>
+    <div class="sub">Your control room: sample picture + the exact fun prompt you say to clients. Inactivate lapok poses so they never enter a client's shooting flow. Feeds Jobs automatically.</div>
+  </div>
+  <div class="add-row">
+    <input id="in-pose-t" placeholder="Pose title"><select id="in-pose-niche"><option>Wedding</option><option>Solemnisation</option><option>Tunang</option><option>Convo</option><option>Food</option><option>Portraiture</option><option>Family</option></select>
+    <select id="in-pose-sit"><option>Indoor</option><option>Outdoor</option><option>Studio</option></select>
+    <input id="in-pose-n" type="number" placeholder="Pax" style="max-width:70px"><input id="in-pose-prompt" placeholder="Prompt you say to clients" style="flex:1 1 220px">
+    <button class="btn" onclick="addPose()">+ Add Pose</button>
+  </div>
+  <div class="gal" id="pose-cards"></div>
+</div>
+
+<!-- TRENDS -->
+<div class="view" id="view-trends">
+  <div class="view-head"><h1>📈 Trends Radar</h1><div class="sub">Awareness only — what's hot on social right now. Send anything here to Content to start producing it.</div></div>
+  <div class="cards" id="trend-cards"></div>
+</div>
+</main>
+
+<script>
+/* ================= HELPERS ================= */
+const esc=s=>String(s??"").replace(/</g,"&lt;");
+const img=(seed,w=420,h=280)=>`https://picsum.photos/seed/${seed}/${w}/${h}`;
+const pic=(seed,label,w=420,h=280)=>`<figure><img class="ph" src="${img(seed,w,h)}" alt="${esc(label)}" onerror="this.style.display='none'"><div>${esc(label)}</div></figure>`;
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes();};
+const fmt=m=>String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(Math.round(m%60)).padStart(2,"0");
+const mapsUrl=v=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(v);
+const statusClass=s=>({"Planned":"s-planned","In Progress":"s-progress","Done":"s-done","New":"s-new","Follow Up":"s-followup","Quote Sent":"s-quote","Booked":"s-booked","Idea":"s-idea","In Bengkel":"s-progress","Posted":"s-ready"})[s]||"s-planned";
+
+/* ================= NICHE BRIEFS ================= */
+const NICHE_BRIEF={
+"Wedding":{style:"Documentary-editorial: candid flow with editorial framing; quiet frames between events.",
+  shotlist:["Getting ready + detail flat-lay","Solemnisation key moments","Couple portraits golden hour","Family groupings","Reception + flash dancefloor"],
+  props:"Veil, rings box, fresh florals, heirloom fabric for detail shots.",
+  outdoor:[["Canopy walk — Perdana Botanical Garden","kl-garden-canopy"],["Lake edge reflections — Titiwangsa","kl-lake-titiw"],["Old KL shophouse alley textures","kl-alley-texture"]]},
+"Solemnisation":{style:"Soft, respectful coverage; keep the akad moment clean and central.",
+  shotlist:["Pelamin wide + detail ring shot","Akad signing close sequence","Salam / family blessings","Mini couple portraits at pelamin"],
+  props:"Ring box, pelamin florals, sejadah corner detail.",
+  outdoor:[["Masjid courtyard arches","mosque-arch"],["Gazebo garden soft light","gazebo-soft"]]},
+"Tunang":{style:"Romantic ring-focus storytelling, playful couple energy.",
+  shotlist:["Ring exchange macro","Candid laughter sequence","Two-shot seated, ring hand raised"],
+  props:"Ring tray, small cake, bouquet.",
+  outdoor:[["Riverside sunset bench","river-bench"],["Cafe window warm light","cafe-window"]]},
+"Convo":{style:"Proud, bright, fast rotation — many grads, short time each.",
+  shotlist:["Gown + scroll classic pose","Family badge pin moment","Convowalk motion shot","Friend group jumps"],
+  props:"Scroll, convobadge, bouquet, sunglasses prop.",
+  outdoor:[["University main gate steps","uni-gate"],["Purple flag corridor (classic convo spot)","convoflag-hall"]]},
+"Food":{style:"Dark-moody or bright-clean per menu; hero dish gets the drama.",
+  shotlist:["Hero dish 45° with steam","Overhead full-table spread","Hand lifting / pouring action","Ingredient raw close-up"],
+  props:"Dark ceramic plates, linen napkin, brass cutlery, raw ingredients scatter, wooden board, steam spray.",
+  outdoor:[["N/A — studio/tabletop only","food-studio"]],
+  menu:"Position hero dish front-centre on the table; garnish toward camera; sauce drips facing lens; leave negative space for menu text overlay."},
+"Portraiture":{style:"Clean light, strong catchlights, minimal background.",
+  shotlist:["Classic 45° headshot","Profile with negative space","Movement hair flip","Low-angle confident stance"],
+  props:"Reflector, chair stool, textured backdrop.",
+  outdoor:[["City graffiti wall","city-wall"],["Field backlit at dusk","field-dusk"]]},
+"Family":{style:"Candid play first, arranged classics second.",
+  shotlist:["Walk-towards-camera together","Circle huddle laughing","Candid tickle / play","Parents + kids quiet moment"],
+  props:"Picnic blanket, bubbles, small stool.",
+  outdoor:[["Lake Gardens open lawn","lake-lawn"],["Playground golden hour","playground-golden"]]}
+};
+
+/* ================= DATA ================= */
+let now0=nowMin();
+let jobs=[
+ {id:1,name:"Aisyah & Farid Wedding",venue:"Hotel Equatorial, Kuala Lumpur",date:"Today",niche:"Wedding",start:now0-90,end:now0+45},
+ {id:2,name:"Siti Aminah — Solemnisation",venue:"Masjid Negara, Kuala Lumpur",date:"Today",niche:"Solemnisation",start:now0+120,end:now0+210},
+ {id:3,name:"Nasi Lemak Bungkus Cafe Menu",venue:"Kampung Baru, Kuala Lumpur",date:"Today",niche:"Food",start:now0+30,end:now0+150}
+];
+let leads=[
+ {id:4,name:"Rajesh Kumar",phone:"60123456789",ig:"rajesh.k",service:"Portraiture",status:"New",note:"Asked about pricing; decision by month-end",draft:""},
+ {id:5,name:"Nurul Hidayah",phone:"60198765432",ig:"nurul.h",service:"Tunang",status:"Follow Up",note:"Wants moody film look; send portfolio",draft:""},
+ {id:6,name:"Lim Wei Jian",phone:"601122334455",ig:"limwj",service:"Wedding",status:"Booked",note:"Wedding Signature, confirmed for March",draft:""}
+];
+let poses=[
+ {id:1,t:"Forehead touch, eyes closed",niche:"Wedding",sit:"Outdoor",pax:2,prompt:"\"Close your eyes… pretend it's just the two of you at your kitchen table.\"",seed:"pose-forehead",on:true},
+ {id:2,t:"Walking hand-in-hand candid",niche:"Wedding",sit:"Outdoor",pax:2,prompt:"\"Walk slowly towards me and tell each other an inside joke — don't look at the camera.\"",seed:"pose-walk",on:true},
+ {id:3,t:"Ring detail hands interlocked",niche:"Tunang",sit:"Indoor",pax:2,prompt:"\"Show me the ring like you just can't keep it secret!\"",seed:"pose-ring",on:true},
+ {id:4,t:"Pelamin seated classic",niche:"Solemnisation",sit:"Indoor",pax:2,prompt:"\"Sit tall like royalty — chin slightly down, soft smile.\"",seed:"pose-pelamin",on:true},
+ {id:5,t:"Gown + scroll victory",niche:"Convo",sit:"Outdoor",pax:1,prompt:"\"Throw the scroll in the air like you just graduated the whole country!\"",seed:"pose-convo",on:true},
+ {id:6,t:"Circle huddle laughing",niche:"Family",sit:"Outdoor",pax:5,prompt:"\"Everyone lean in and whisper your silliest secret to the middle person.\"",seed:"pose-huddle",on:true},
+ {id:7,t:"Hero dish 45° with steam",niche:"Food",sit:"Studio",pax:0,prompt:"(setup) Steam spray right before shutter; garnish forward, sauce drip facing lens.",seed:"pose-food-hero",on:true},
+ {id:8,t:"Overhead full-table spread",niche:"Food",sit:"Studio",pax:0,prompt:"(setup) Flat-lay grid — plates at 5° rotation, negative space for menu text.",seed:"pose-food-flat",on:true},
+ {id:9,t:"1998 peace-sign portrait",niche:"Portraiture",sit:"Studio",pax:1,prompt:"\"Give me your best retro peace sign — now drop it and just laugh.\"",seed:"pose-peace",on:false},
+ {id:10,t:"Dip / twirl motion shot",niche:"Wedding",sit:"Outdoor",pax:2,prompt:"\"I'll count 3-2-1 — on 3, dip like the song just hit the chorus!\"",seed:"pose-dip",on:true}
+];
+let content=[
+ {id:11,t:"Golden hour backlit couple silhouette",platform:"Instagram Reels",due:"20 Nov",st:"Idea",cx:"simple",seed:"idea-silhouette"},
+ {id:12,t:"Cinematic letterbox wedding teaser",platform:"TikTok",due:"28 Nov",st:"In Bengkel",cx:"complex",seed:"idea-letterbox"},
+ {id:13,t:"Flash dancefloor photo dump",platform:"Instagram",due:"1 Dec",st:"Idea",cx:"simple",seed:"idea-flash"},
+ {id:14,t:"POV: bridesmaid holding back tears",platform:"Reels + Threads",due:"25 Nov",st:"Idea",cx:"complex",seed:"idea-pov"}
+];
+let bengkel=[
+ {id:15,t:"Cinematic letterbox wedding teaser",ck:[["Raw footage from wedding day received",true],["Pick 6 hero moments",true],["Add letterbox crop + teal-orange grade",false],["Layer vows audio under music",false],["Caption + hashtag set",false],["Schedule post / Meta Ad",false]]}
+];
+let packages=[
+ {niche:"Wedding",name:"Wedding Signature",inc:"Full day · 2 photographers · 300 edited photos + album",price:5800},
+ {niche:"Wedding",name:"Wedding Essential",inc:"8 hrs · 1 photographer · 150 edited photos",price:3200},
+ {niche:"Solemnisation",name:"Solemnisation Basic",inc:"2 hrs · 50 edited photos",price:1800},
+ {niche:"Tunang",name:"Tunang Ring Moment",inc:"1.5 hrs · 30 edited photos",price:950},
+ {niche:"Convo",name:"Convo Express",inc:"45 min · 15 edited photos",price:350},
+ {niche:"Food",name:"Menu Hero Session",inc:"Half day tabletop · 25 dishes · menu-ready crops",price:2200},
+ {niche:"Portraiture",name:"Portrait Studio",inc:"1 hr studio · 3 retouched looks",price:450}
+];
+let addons=[
+ {name:"Same-day sneak peek reel",price:350},{name:"Extra photographer (per hour)",price:300},
+ {name:"Premium 30-page album",price:800},{name:"Drone coverage",price:500},{name:"Menu text overlay design",price:400}
+];
+const TRENDS=[
+ ["Film frames & nostalgia look","Instagram · Pinterest","35mm grain, light leaks, Portra colour — a quiet rebellion against AI-perfection.","kl-film"],
+ ["Documentary meets editorial","Instagram · TikTok","Candid moments with fashion-editorial framing; longer, slower coverage.","doc-edit"],
+ ["Cinematic letterbox & teal-orange","TikTok · Reels","2.39:1 crops, moody teal shadows + warm skin tones — prestige-TV feel.","letterbox"],
+ ["Messy aesthetics","Instagram · Pinterest","Wrinkled sheets, cluttered rooms, honest natural light — trust with Gen Z.","messy"],
+ ["POV & GRWM reels","TikTok · Threads","'POV: you're the friend holding back tears' + get-ready-with-me clips.","pov-grwm"],
+ ["Flash photography comeback","Instagram · TikTok","Harsh direct flash for dancefloors and night portraits — top reception request.","flashback"],
+ ["Layered audio storytelling","TikTok · Reels","Real day-sounds — laughter, speeches — woven under music.","audio-layer"],
+ ["Blue hour & moody indigo","Pinterest · Instagram","Dusk-blue stills replacing golden hour for some couples — schedule a post-sunset slot.","bluehour"],
+ ["Postcard-style mixed galleries","Instagram · Pinterest","Carousels mixing phone clips with stills flowing across the day.","postcard"],
+ ["Less is more","Instagram","Minimal decor, clean tablescapes, emotion over spectacle.","minimal"]
+];
+
+/* ================= NAV ================= */
+document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  document.getElementById("view-"+b.dataset.view).classList.add("active");
+}));
+setInterval(()=>{document.getElementById("clock").textContent="🕒 "+new Date().toLocaleTimeString();renderJobs();renderDashboard();},15000);
+setInterval(()=>{document.getElementById("clock").textContent="🕒 "+new Date().toLocaleTimeString();},1000);
+
+/* ================= JOBS (live status) ================= */
+function jobStatus(j){const n=nowMin();return n<j.start?"Planned":n<=j.end?"In Progress":"Done";}
+let selectedJob=null, editingJob=null;
+function renderJobs(){
+  const list=document.getElementById("list-jobs");list.innerHTML="";
+  jobs.forEach(j=>{
+    const st=jobStatus(j);
+    const div=document.createElement("div");div.className="card"+(st==="In Progress"?"":st==="Done"?" g":"");
+    div.innerHTML=`<div class="title">${esc(j.name)}</div>
+      <div class="meta">📍 <b>${esc(j.venue)}</b><br>🕘 ${esc(j.date)} ${fmt(j.start)}–${fmt(j.end)}<br>🎯 <b>${esc(j.niche)}</b> · <span class="tag niche">${esc(j.niche)}</span></div>
+      <div class="foot"><span class="status ${statusClass(st)}">${st}</span>
+      <button class="btn-ghost btn-sm" onclick="openAdjust(${j.id})">⏰ Adjust</button>
+      <button class="btn-ghost btn-sm" onclick="selectJob(${j.id})">📂 Open brief</button>
+      <button class="del" onclick="jobs=jobs.filter(x=>x.id!==${j.id});renderAll()">✕</button></div>
+      ${editingJob===j.id?`<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <input type="time" id="adj-start" value="${fmt(j.start)}"><input type="time" id="adj-end" value="${fmt(j.end)}">
+        <button class="btn btn-sm" onclick="saveAdjust(${j.id})">Save time</button></div>`:""}`;
+    list.appendChild(div);
+  });
+  document.getElementById("nc-jobs").textContent=jobs.length;
+  renderJobDetail();
+}
+function openAdjust(id){editingJob=editingJob===id?null:id;renderJobs();}
+function saveAdjust(id){
+  const j=jobs.find(x=>x.id===id);
+  const p=t=>{const[h,m]=t.split(":").map(Number);return h*60+m;};
+  j.start=p(document.getElementById("adj-start").value||fmt(j.start));
+  j.end=p(document.getElementById("adj-end").value||fmt(j.end));
+  if(j.end<=j.start)j.end=j.start+60;
+  editingJob=null;renderAll();
+}
+function selectJob(id){selectedJob=selectedJob===id?null:id;renderJobs();}
+function renderJobDetail(){
+  const el=document.getElementById("job-detail");
+  const j=jobs.find(x=>x.id===selectedJob);
+  if(!j){el.innerHTML="";return;}
+  const B=NICHE_BRIEF[j.niche]||NICHE_BRIEF.Portraiture;
+  const fitPoses=poses.filter(p=>p.on&&(p.niche===j.niche||j.niche==="Wedding"&&["Wedding","Tunang"].includes(p.niche)));
+  el.innerHTML=`<div class="brief">
+    <h2>📂 Job brief — ${esc(j.name)}</h2>
+    <p class="maplink" style="margin:6px 0 10px"><a href="${mapsUrl(j.venue)}" target="_blank">🗺 Google Maps directions → ${esc(j.venue)}</a> · <a href="https://www.google.com/maps/search/${encodeURIComponent("outdoor photoshoot near "+j.venue)}" target="_blank">find outdoor spots nearby ↗</a></p>
+    ${pic(j.niche.toLowerCase()+"-venue","📍 Location — "+j.venue,520,220)}
+    <h3>🎯 Posing style</h3><li>${esc(B.style)}</li>
+    <h3>📸 Shotlist</h3>${B.shotlist.map(s=>`<li>${esc(s)}</li>`).join("")}
+    <h3>🧰 Props / setup</h3><li>${esc(B.props)}</li>
+    ${B.menu?`<h3>🍽 Menu setup & positioning</h3><li>${esc(B.menu)}</li>`:""}
+    ${j.niche==="Wedding"?`<h3>🌳 Outdoor potential areas (wedding)</h3><div class="picgrid">${B.outdoor.map(([n,s])=>pic(s,n)).join("")}</div>`:""}
+    <h3>🧍 Pose flow from your DB (active only)</h3>
+    ${fitPoses.length?fitPoses.map(p=>`<li><b>${esc(p.t)}</b> · ${esc(p.sit)} · ${p.pax}pax — say: <i>${esc(p.prompt)}</i></li>`).join(""):"<li>No active poses for this niche yet — add some in the Pose DB.</li>"}
+  </div>`;
+}
+function addJob(){
+  const g=id=>document.getElementById(id).value.trim();
+  const name=g("in-job-name"),venue=g("in-job-venue");if(!name||!venue)return;
+  const p=t=>{if(!t)return nowMin();const[h,m]=t.split(":").map(Number);return h*60+m;};
+  let s=p(g("in-job-start")),e=p(g("in-job-end"));if(e<=s)e=s+120;
+  jobs.push({id:Date.now(),name,venue,date:g("in-job-date")||"Today",niche:g("in-job-niche"),start:s,end:e});
+  ["in-job-name","in-job-venue","in-job-date","in-job-start","in-job-end"].forEach(i=>document.getElementById(i).value="");
+  renderAll();
+}
+
+/* ================= LEADS ================= */
+function draftFor(l){
+  return l.status==="New"?`Hi ${l.name.split(" ")[0]}, thank you for enquiring with Kenangkala Studio! 😊 For ${l.service}, our packages start from RM350. Could I know your preferred date?`:
+  l.status==="Follow Up"?`Hi ${l.name.split(" ")[0]}, just following up on your ${l.service} enquiry. Would you like me to send our full package list?`:
+  l.status==="Quote Sent"?`Hi ${l.name.split(" ")[0]}, have you had time to review the quotation we pushed to you? Happy to adjust anything!`:
+  `Hi ${l.name.split(" ")[0]}, confirming your ${l.service} booking with Kenangkala Studio. We're excited! 📸`;
+}
+function waLink(l){const t=(l.draft||draftFor(l));return "https://web.whatsapp.com/send?phone="+encodeURIComponent(l.phone||"")+"&text="+encodeURIComponent(t);}
+function renderLeads(){
+  const filter=document.getElementById("filter-leads").value,list=document.getElementById("list-leads");
+  list.innerHTML="";
+  const shown=leads.filter(l=>filter==="all"||l.status===filter);
+  if(!shown.length)list.innerHTML=`<div class="empty">No leads here yet.</div>`;
+  shown.forEach(l=>{
+    const div=document.createElement("div");div.className="card b";
+    div.innerHTML=`<div class="title">${esc(l.name)}</div>
+      <div class="meta">🛎 <b>${esc(l.service)}</b> · 📱 ${esc(l.phone||"—")} · @${esc(l.ig||"—")}<br>📝 Chat summary: ${esc(l.note||"—")}${l.quote?`<br>🧾 Quotation pushed: <b>${esc(l.quote)}</b>`:""}</div>
+      <div class="foot"><span class="status ${statusClass(l.status)}" onclick="cycleLead(${l.id})" style="cursor:pointer">${l.status} ▸</span>
+      <a class="btn-ghost btn-sm" href="${waLink(l)}" target="_blank">WhatsApp ↗</a>
+      <a class="btn-ghost btn-sm" href="https://instagram.com/${encodeURIComponent(l.ig||"")}" target="_blank">IG ↗</a>
+      <a class="btn-ghost btn-sm" href="https://www.threads.net/@${encodeURIComponent(l.ig||"")}" target="_blank">Threads ↗</a>
+      <button class="del" onclick="leads=leads.filter(x=>x.id!==${l.id});renderAll()">✕</button></div>
+      <textarea style="width:100%;margin-top:8px;font-size:12px" rows="3" oninput="leads.find(x=>x.id===${l.id}).draft=this.value" placeholder="Reply draft (edit me) — opens pre-filled in WhatsApp">${esc(l.draft||draftFor(l))}</textarea>`;
+    list.appendChild(div);
+  });
+  document.getElementById("nc-leads").textContent=leads.length;
+}
+const LEAD_CYCLE=["New","Follow Up","Quote Sent","Booked"];
+function cycleLead(id){const l=leads.find(x=>x.id===id);l.status=LEAD_CYCLE[(LEAD_CYCLE.indexOf(l.status)+1)%LEAD_CYCLE.length];renderAll();}
+function addLead(){
+  const g=id=>document.getElementById(id).value.trim();
+  const name=g("in-lead-name");if(!name)return;
+  leads.push({id:Date.now(),name,phone:g("in-lead-phone"),ig:g("in-lead-ig"),service:g("in-lead-service"),status:g("in-lead-status"),note:""});
+  ["in-lead-name","in-lead-phone","in-lead-ig","in-lead-service"].forEach(i=>document.getElementById(i).value="");
+  renderAll();
+}
+
+/* ================= CONTENT ================= */
+function renderContent(){
+  const filter=document.getElementById("filter-content").value,list=document.getElementById("list-content");
+  list.innerHTML="";
+  content.filter(c=>filter==="all"||c.st===filter).forEach(c=>{
+    const div=document.createElement("div");div.className="card p";
+    div.innerHTML=`<img class="ph" src="${img(c.seed)}" alt="${esc(c.t)}" onerror="this.style.display='none'">
+      <div class="title" style="margin-top:8px">${esc(c.t)}</div>
+      <div class="meta">📺 ${esc(c.platform)} · 📅 ${esc(c.due)} · ${c.cx==="complex"?"🛠 needs Bengkel":"⚡ quick shoot"}</div>
+      <div class="foot"><span class="status ${statusClass(c.st)}" onclick="cycleContent(${c.id})" style="cursor:pointer">${c.st} ▸</span>
+      <button class="btn-ghost btn-sm" title="Add to Pose DB" onclick="toPoseDB(${c.id})">🧍 + Pose DB</button>
+      ${c.cx==="complex"?`<button class="btn-ghost btn-sm" onclick="toBengkel(${c.id})">🛠 Bengkel</button>`:""}
+      <button class="del" onclick="content=content.filter(x=>x.id!==${c.id});renderAll()">✕</button></div>`;
+    list.appendChild(div);
+  });
+  document.getElementById("nc-content").textContent=content.length;
+}
+const CONTENT_CYCLE=["Idea","In Bengkel","Posted"];
+function cycleContent(id){const c=content.find(x=>x.id===id);c.st=CONTENT_CYCLE[(CONTENT_CYCLE.indexOf(c.st)+1)%CONTENT_CYCLE.length];renderAll();}
+function toPoseDB(id){
+  const c=content.find(x=>x.id===id);
+  poses.push({id:Date.now(),t:c.t,niche:"Portraiture",sit:"Outdoor",pax:2,prompt:"\"(edit this prompt) "+c.t+"\"",seed:c.seed,on:true});
+  renderAll();
+}
+function toBengkel(id){
+  const c=content.find(x=>x.id===id);
+  if(bengkel.some(b=>b.t===c.t))return;
+  c.st="In Bengkel";
+  bengkel.push({id:Date.now(),t:c.t,ck:[["Concept + references locked",false],["Raw footage / photos provided",false],["Edit: crop, grade, audio",false],["Caption + hashtags draft",false],["Review & approve",false],["Push to social / Meta Ads",false]]});
+  renderAll();
+}
+function addContent(){
+  const g=id=>document.getElementById(id).value.trim();
+  const t=g("in-c-title");if(!t)return;
+  content.push({id:Date.now(),t,platform:g("in-c-platform")||"—",due:g("in-c-due")||"—",st:"Idea",cx:g("in-c-cx"),seed:"idea-"+Math.floor(Math.random()*9999)});
+  ["in-c-title","in-c-platform","in-c-due"].forEach(i=>document.getElementById(i).value="");
+  renderAll();
+}
+
+/* ================= BENGKEL ================= */
+function renderBengkel(){
+  const list=document.getElementById("list-bengkel");list.innerHTML="";
+  if(!bengkel.length){list.innerHTML=`<div class="empty">No drafts in the workshop. Send a complex idea from Content 🛠</div>`;}
+  bengkel.forEach((b,bi)=>{
+    const done=b.ck.filter(c=>c[1]).length;
+    const div=document.createElement("div");div.className="card";
+    div.innerHTML=`<div class="title">🛠 ${esc(b.t)}</div>
+      <div class="meta">Checklist ${done}/${b.ck.length} — ${done===b.ck.length?"✅ ready to push to social / Meta Ads":"in progress"}</div>
+      <div style="margin-top:10px">${b.ck.map((c,ci)=>`<div class="ck ${c[1]?"done":""}" onclick="toggleCk(${bi},${ci})">${c[1]?"✅":"⬜"} ${esc(c[0])}</div>`).join("")}</div>
+      <div class="foot"><button class="btn-ghost btn-sm" onclick="bengkel.splice(${bi},1);renderAll()">Archive draft</button>
+      <span style="font-size:11px;color:var(--muted)">Attach raw footage folder when ready — checklist drives completion.</span></div>`;
+    list.appendChild(div);
+  });
+  document.getElementById("nc-bengkel").textContent=bengkel.length;
+}
+function toggleCk(bi,ci){bengkel[bi].ck[ci][1]=!bengkel[bi].ck[ci][1];renderAll();}
+
+/* ================= PACKAGES ================= */
+function renderPackages(){
+  const niches=[...new Set(packages.map(p=>p.niche))];
+  document.getElementById("pkg-groups").innerHTML=niches.map(n=>`
+    <h3 style="color:var(--purple);margin:10px 0 4px">${esc(n)}</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>Package</th><th>Includes</th><th>Price (RM)</th><th></th></tr></thead><tbody>
+    ${packages.map((p,i)=>p.niche!==n?"":`<tr><td><b>${esc(p.name)}</b></td><td style="color:var(--muted)">${esc(p.inc)}</td>
+      <td><input type="number" value="${p.price}" style="width:95px" onchange="packages[${i}].price=+this.value"></td>
+      <td><button class="del" onclick="packages.splice(${i},1);renderAll()">✕</button></td></tr>`).join("")}
+    </tbody></table></div>`).join("");
+  document.getElementById("q-pkg").innerHTML=packages.map(p=>`<option>${esc(p.niche)} — ${esc(p.name)} · RM${p.price}</option>`).join("");
+  document.getElementById("q-lead").innerHTML=leads.map(l=>`<option>${esc(l.name)} (${esc(l.service)})</option>`).join("");
+  document.getElementById("q-addons").innerHTML=addons.map((a,i)=>`<button class="pose-chip" id="qadd-${i}" onclick="this.classList.toggle('on')" style="cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:20px;padding:4px 12px;font-size:12px">${esc(a.name)} +RM${a.price}</button>`).join("");
+  renderQuote();
+}
+function addPackage(){
+  const g=id=>document.getElementById(id).value.trim();
+  const n=g("in-pkg-name");if(!n)return;
+  packages.push({niche:g("in-pkg-niche"),name:n,inc:g("in-pkg-inc")||"—",price:+g("in-pkg-price")||0});
+  ["in-pkg-name","in-pkg-inc","in-pkg-price"].forEach(i=>document.getElementById(i).value="");
+  renderAll();
+}
+function renderQuote(){
+  const sel=document.getElementById("q-pkg").value||"";
+  const p=packages.find(x=>sel.includes(x.name))||packages[0];
+  const chosen=addons.filter((a,i)=>document.getElementById("qadd-"+i)?.classList.contains("on"));
+  const disc=+document.getElementById("q-disc").value||0;
+  const sub=p.price+chosen.reduce((s,a)=>s+a.price,0);
+  const total=Math.max(0,sub-disc);
+  const tpl=document.getElementById("q-template").value;
+  const bar=tpl==="Classic Border"?"══════════════════":tpl==="Modern Accent"?"▸ ────────":"──────";
+  const head=tpl==="Classic Border"?"KENANGKALA STUDIO":tpl==="Modern Accent"?"✦ KENANGKALA STUDIO":"kenangkala studio";
+  document.getElementById("quote-out").textContent=
+`${bar}
+  ${head}
+  ${tpl} template
+${bar}
+Lead: ${document.getElementById("q-lead").value||"—"}
+Package: ${p.name} (${p.niche}) — RM ${p.price}
+  ${p.inc}
+${chosen.length?chosen.map(a=>`Custom: ${a.name} — RM ${a.price}`).join("\n")+"\n":""}Subtotal: RM ${sub}
+Discount: -RM ${disc}
+TOTAL: RM ${total}
+${bar}
+Sent for your review — fully adjustable. Sample prices only.`;
+}
+function pushQuote(){
+  const sel=document.getElementById("q-lead").value||"";
+  const l=leads.find(x=>sel.startsWith(x.name));
+  if(l){const txt=document.getElementById("quote-out").textContent.split("\n").filter(s=>s.startsWith("Package")||s.startsWith("TOTAL")).join(" · ");l.quote=txt;l.status="Quote Sent";}
+  renderAll();
+}
+
+/* ================= POSE DB ================= */
+function renderPoses(){
+  const nf=document.getElementById("pose-filter-niche").value,af=document.getElementById("pose-filter-active").value;
+  const list=document.getElementById("pose-cards");list.innerHTML="";
+  poses.filter(p=>(nf==="all"||p.niche===nf)&&(af==="all"||p.on)).forEach(p=>{
+    const div=document.createElement("div");div.className="card pose-card"+(p.on?"":" p");
+    div.innerHTML=`<img class="ph" src="${img(p.seed)}" alt="${esc(p.t)}" onerror="this.style.display='none'">
+      <div class="title" style="margin-top:8px">${esc(p.t)}</div>
+      <div class="meta"><span class="tag niche">${esc(p.niche)}</span><span class="tag">${esc(p.sit)}</span><span class="tag">${p.pax} pax</span>${p.on?"":`<span class="tag off">inactive — out of client flow</span>`}<br>🗣 ${esc(p.prompt)}</div>
+      <div class="foot">
+        <button class="btn-ghost btn-sm" onclick="togglePose(${p.id})">${p.on?"◼ Deactivate":"▶ Activate"}</button>
+        <select class="btn-sm" style="font-size:11px;padding:3px 6px" onchange="movePose(${p.id},this.value)">
+          ${["Wedding","Solemnisation","Tunang","Convo","Food","Portraiture","Family"].map(n=>`<option ${n===p.niche?"selected":""}>${n}</option>`).join("")}
+        </select>
+        <button class="del" onclick="poses=poses.filter(x=>x.id!==${p.id});renderAll()">✕</button>
+      </div>`;
+    list.appendChild(div);
+  });
+  document.getElementById("nc-poses").textContent=poses.filter(p=>p.on).length+" / "+poses.length;
+}
+function togglePose(id){const p=poses.find(x=>x.id===id);p.on=!p.on;renderAll();}
+function movePose(id,n){poses.find(x=>x.id===id).niche=n;renderAll();}
+function addPose(){
+  const g=id=>document.getElementById(id).value.trim();
+  const t=g("in-pose-t");if(!t)return;
+  poses.push({id:Date.now(),t,niche:g("in-pose-niche"),sit:g("in-pose-sit"),pax:+g("in-pose-n")||1,prompt:g("in-pose-prompt")||"\"(write the prompt you'll say)\"",seed:"pose-"+Math.floor(Math.random()*9999),on:true});
+  ["in-pose-t","in-pose-n","in-pose-prompt"].forEach(i=>document.getElementById(i).value="");
+  renderAll();
+}
+
+/* ================= TRENDS ================= */
+function renderTrends(){
+  document.getElementById("trend-cards").innerHTML=TRENDS.map(([t,p,d,seed])=>`
+    <div class="card p"><img class="ph" src="${img(seed)}" alt="${esc(t)}" onerror="this.style.display='none'">
+    <div class="title" style="margin-top:8px">${esc(t)}</div>
+    <div class="meta"><span class="tag">${esc(p)}</span><br><br>${esc(d)}</div>
+    <div class="foot"><button class="btn-ghost btn-sm" onclick="trendToContent('${t.replace(/'/g,"\\'")}')">→ Save to Content</button></div></div>`).join("");
+}
+function trendToContent(t){content.push({id:Date.now(),t,platform:"—",due:"—",st:"Idea",cx:"complex",seed:"idea-"+Math.floor(Math.random()*9999)});renderAll();}
+
+/* ================= DASHBOARD ================= */
+function renderDashboard(){
+  document.getElementById("d-jobs").textContent=jobs.length;
+  document.getElementById("d-leads").textContent=leads.length;
+  document.getElementById("d-content").textContent=content.length;
+  document.getElementById("d-done").textContent=jobs.filter(j=>jobStatus(j)==="Done").length;
+  document.getElementById("dash-body").innerHTML=
+    jobs.map(j=>`<tr><td><b>🗓 ${esc(j.name)}</b></td><td style="color:var(--muted)">${esc(j.venue)} · ${esc(j.date)} ${fmt(j.start)}–${fmt(j.end)}</td><td><span class="status ${statusClass(jobStatus(j))}">${jobStatus(j)}</span></td></tr>`).join("")+
+    leads.map(l=>`<tr><td><b>💬 ${esc(l.name)}</b></td><td style="color:var(--muted)">${esc(l.service)} · ${esc(l.note||"")}</td><td><span class="status ${statusClass(l.status)}">${l.status}</span></td></tr>`).join("");
+}
+
+/* ================= INIT ================= */
+function renderAll(){renderJobs();renderLeads();renderContent();renderBengkel();renderPackages();renderPoses();renderTrends();renderDashboard();}
+renderAll();
+</script>
+</body>
+</html>
