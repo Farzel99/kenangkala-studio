@@ -3,63 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kenangkala Studio — Command Board</title>
+<meta name="referrer" content="no-referrer">
+<title>Kenangkala Studio — Command Center</title>
 <style>
-  :root{--bg:#141518;--side:#191b1f;--panel:#1d1f24;--card:#26282f;--border:#33363f;
-    --text:#e8eaee;--muted:#9aa0ab;--accent:#ffb340;--blue:#4fc3f7;--purple:#b388ff;--green:#66d97f;--red:#ff6b6b}
+  :root{
+    --bg:#f5efe4;--side:#2f2723;--side-2:#3b312b;--side-text:#efe6d8;--side-muted:#a99b8b;
+    --panel:#fffaf2;--card:#fffdf9;--border:#e7dccb;--line:#f0e7d9;
+    --text:#2b2420;--muted:#7d7166;--faint:#a99b8b;
+    --accent:#b8742a;--accent-soft:#f4e4c9;
+    --blush:#f5d9d1;--blush-ink:#a4473a;--sage:#dfe7d0;--sage-ink:#4f6b3a;--sand:#efe2c9;--sand-ink:#7a5a2a;--clay:#f1d6c0;--clay-ink:#9a4f2a;
+    --blue:#3f6a91;--purple:#74528f;--green:#4f6b3a;--red:#b0473a;
+    --ig:#c2577a;--tt:#2b2420;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;height:100vh;display:flex;overflow:hidden}
-  h1{font-size:18px}h2{font-size:15px}h3{font-size:13px}
-  nav{width:212px;background:var(--side);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:4px;flex-shrink:0}
-  .logo{padding:6px 10px 14px;font-size:15px;font-weight:700}
-  .logo span{color:var(--accent)}
-  .clock{font-size:11px;color:var(--muted);padding:0 10px 12px}
-  .nav-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border:none;background:none;color:var(--muted);font-size:13px;border-radius:8px;cursor:pointer;text-align:left;width:100%}
-  .nav-btn:hover{background:var(--card);color:var(--text)}
-  .nav-btn.active{background:var(--card);color:var(--accent);font-weight:600}
-  .nav-count{margin-left:auto;font-size:11px;background:var(--border);border-radius:10px;padding:1px 8px;color:var(--text)}
-  .side-note{margin-top:auto;font-size:10px;color:#6d727d;padding:10px}
-  main{flex:1;overflow-y:auto;padding:22px 26px}
+  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,-apple-system,sans-serif;height:100vh;display:flex;overflow:hidden}
+  h1{font-size:20px;font-family:var(--serif);font-weight:600}h2{font-size:16px;font-family:var(--serif);font-weight:600}h3{font-size:14px;font-family:var(--serif);font-weight:600}
+  h4{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:14px 0 6px}
+
+  /* ---------- sidebar ---------- */
+  nav{width:224px;background:var(--side);color:var(--side-text);padding:16px 10px;display:flex;flex-direction:column;gap:2px;flex-shrink:0;overflow-y:auto}
+  .logo{padding:4px 10px 12px;font-size:16px;font-weight:700;font-family:var(--serif)}
+  .logo span{color:#e6b36e}
+  .acct{position:relative;margin:0 2px 8px}
+  .acct-btn{display:flex;align-items:center;gap:10px;width:100%;background:var(--side-2);border:1px solid #4a3f38;border-radius:12px;padding:8px 10px;color:var(--side-text);cursor:pointer;text-align:left}
+  .av{width:30px;height:30px;border-radius:50%;background:#e6b36e;color:var(--side);display:grid;place-items:center;font-weight:700;font-size:12px;flex-shrink:0}
+  .acct-txt{display:flex;flex-direction:column;min-width:0;flex:1}
+  .acct-txt b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .acct-txt small{font-size:11px;color:var(--side-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .caret{color:var(--side-muted);font-size:11px}
+  .acct-menu{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(47,39,35,.18);padding:6px;z-index:20}
+  .acct-menu.open{display:block}
+  .acct-menu button{display:flex;align-items:center;gap:8px;width:100%;border:none;background:none;padding:8px;border-radius:8px;font-size:13px;cursor:pointer;color:var(--text);text-align:left}
+  .acct-menu button:hover{background:var(--accent-soft)}
+  .acct-menu .on{font-weight:700}
+  .acct-menu hr{border:none;border-top:1px solid var(--border);margin:4px 0}
+  .clock{font-size:11px;color:var(--side-muted);padding:0 10px 6px}
+  .nav-group{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--side-muted);padding:12px 12px 4px}
+  .nav-btn{display:flex;align-items:center;gap:10px;padding:8px 12px;border:none;background:none;color:#d9cdbd;font-size:13px;border-radius:9px;cursor:pointer;text-align:left;width:100%}
+  .nav-btn:hover{background:var(--side-2);color:#fff}
+  .nav-btn.active{background:var(--blush);color:var(--side);font-weight:600}
+  .nav-count{margin-left:auto;font-size:10px;background:#4a3f38;border-radius:10px;padding:1px 8px;color:var(--side-text)}
+  .nav-btn.active .nav-count{background:#fff;color:var(--side)}
+  .nav-count.notion{background:#e8e2d8;color:var(--side);font-weight:600}
+  .side-note{margin-top:auto;font-size:10px;color:var(--side-muted);padding:12px 10px 4px;line-height:1.5}
+
+  /* ---------- main ---------- */
+  main{flex:1;overflow-y:auto;padding:16px 26px 40px}
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .search{position:relative;flex:1;min-width:220px;max-width:420px;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0 10px}
+  .search input{border:none;background:none;flex:1;padding:8px 0;outline:none}
+  .search-res{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(47,39,35,.15);padding:6px;z-index:15;max-height:360px;overflow:auto}
+  .search-res.open{display:block}
+  .search-res button{display:block;width:100%;text-align:left;border:none;background:none;padding:8px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text)}
+  .search-res button:hover{background:var(--accent-soft)}
+  .search-res small{color:var(--muted);display:block;font-size:11px}
+  .pill{font-size:11px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 11px;color:var(--muted);white-space:nowrap}
+  .pill.live{color:var(--sage-ink);border-color:#c9d8b5;background:#f1f6ea}
+  .pill.warn{color:var(--blush-ink);border-color:#efc2b6;background:#fbefeb}
+  .topbar .spacer{flex:1}
+
   .view{display:none}.view.active{display:block}
   .view-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-  .view-head .sub{color:var(--muted);font-size:12px;width:100%;margin-top:-6px}
+  .view-head .sub,.sub{color:var(--muted);font-size:12px;width:100%;margin-top:-4px;line-height:1.5}
   select,input,textarea{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit}
-  input::placeholder,textarea::placeholder{color:#6d727d}
-  .btn{background:var(--accent);color:#1a1408;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer}
-  .btn:hover{filter:brightness(1.1)}
-  .btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border);font-weight:500;padding:6px 12px;font-size:12px;border-radius:8px;cursor:pointer}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+  input::placeholder,textarea::placeholder{color:var(--faint)}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn:hover{filter:brightness(1.07)}
+  .btn-green{background:var(--sage-ink)}
+  .btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border);font-weight:500;padding:6px 12px;font-size:12px;border-radius:8px;cursor:pointer;display:inline-block}
+  .btn-ghost:hover{border-color:var(--accent)}
   .btn-sm{padding:4px 10px;font-size:11px}
+  button:disabled{opacity:.5;cursor:wait}
   .cards{display:flex;flex-wrap:wrap;gap:12px}
-  .card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:14px;flex:1 1 260px;min-width:250px;max-width:400px}
+  .card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:14px;flex:1 1 260px;min-width:250px;max-width:400px}
   .card.b{border-left-color:var(--blue)}.card.p{border-left-color:var(--purple)}.card.g{border-left-color:var(--green)}
   .title{font-weight:600;font-size:14px;margin-bottom:4px}
   .meta{font-size:12px;color:var(--muted);line-height:1.6}
-  .meta b{color:var(--text);font-weight:500}
+  .meta b{color:var(--text);font-weight:600}
   .foot{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
   .status{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;border:none;display:inline-block}
-  .s-planned,.s-new,.s-idea{background:#2e3a52;color:#7fb2ff}
-  .s-progress{background:#3a3222;color:#ffb340}
-  .s-done,.s-ready{background:#213626;color:var(--green)}
-  .s-booked,.s-quote{background:#2b2440;color:var(--purple)}
-  .s-followup{background:#3d2a2a;color:#ff9a7f}
+  .s-planned,.s-new,.s-idea{background:#e3ebf3;color:#3f6a91}
+  .s-progress{background:#f6e6c8;color:#8a5a14}
+  .s-done,.s-ready{background:#e1ebd6;color:#4f6b3a}
+  .s-booked,.s-quote{background:#ece2f1;color:#74528f}
+  .s-followup{background:#f6dcd4;color:#a4473a}
   .del{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px}
   .del:hover{color:var(--red)}
   .empty{color:var(--muted);font-size:13px;padding:14px;border:1px dashed var(--border);border-radius:10px;width:100%;text-align:center}
-  .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;flex:1;min-width:150px}
-  .stat b{font-size:28px;display:block}.stat small{color:var(--muted);font-size:12px}
-  .stat.accent b{color:var(--accent)}.stat.blue b{color:var(--blue)}.stat.purple b{color:var(--purple)}.stat.green b{color:var(--green)}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;flex:1;min-width:150px}
+  .stat b{font-size:28px;display:block;font-family:var(--serif)}.stat small{color:var(--muted);font-size:12px}
+  .stat.accent{background:var(--clay)}.stat.blue{background:var(--blush)}.stat.purple{background:var(--sand)}.stat.green{background:var(--sage)}
   .add-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
   .add-row input,.add-row select{flex:0 1 170px}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px;border-bottom:1px solid var(--border)}
-  td{padding:9px 8px;border-bottom:1px solid #23252b;vertical-align:top}
+  td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
   .tbl-wrap{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:6px 12px 2px;overflow-x:auto}
-  .tag{font-size:11px;background:var(--border);border-radius:6px;padding:2px 8px;display:inline-block;margin:1px 2px 1px 0}
-  .tag.ch{background:#213640;color:var(--blue)}
-  .tag.niche{background:#2b2440;color:var(--purple)}
-  .tag.off{background:#3d2a2a;color:#ff9a7f;text-decoration:line-through}
-  img.ph{width:100%;height:130px;object-fit:cover;border-radius:8px;display:block;background:#1a1c20;border:1px solid var(--border)}
-  .brief{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:6px}
+  .tbl-wrap.flat{background:none;border:none;padding:0}
+  .num{text-align:right;white-space:nowrap}
+  .tag{font-size:11px;background:var(--line);border-radius:6px;padding:2px 8px;display:inline-block;margin:1px 2px 1px 0;color:var(--text)}
+  .tag.ch{background:#e3ebf3;color:var(--blue)}
+  .tag.niche{background:#ece2f1;color:var(--purple)}
+  .tag.off{background:#f6dcd4;color:var(--blush-ink);text-decoration:line-through}
+  .tag.ig{background:#f7e1e8;color:var(--ig)}.tag.tt{background:#e9e4df;color:var(--tt)}
+  img.ph{width:100%;height:130px;object-fit:cover;border-radius:8px;display:block;background:var(--line);border:1px solid var(--border)}
+  .brief{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:12px}
   .brief h3{color:var(--accent);margin:12px 0 6px}.brief h3:first-child{margin-top:0}
   .brief li{margin-left:18px;font-size:13px;color:var(--muted);line-height:1.8}
   .brief img{max-width:230px;margin:4px 8px 4px 0;border-radius:8px;vertical-align:top}
@@ -68,35 +119,217 @@
   .maplink{color:var(--blue);font-size:13px;text-decoration:none}
   a{color:var(--blue);text-decoration:none}
   .pose-card img{height:120px}
-  .quote-out{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;white-space:pre-wrap;line-height:1.7}
+  .pose-chip.on{background:var(--accent-soft)!important;border-color:var(--accent)!important;font-weight:600}
+  .quote-out{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;white-space:pre-wrap;line-height:1.7;font-family:ui-monospace,Menlo,Consolas,monospace}
   .row2{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.row2>div{flex:1;min-width:190px}
   label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
   .ck{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:13px;cursor:pointer}
   .ck.done{opacity:.55;text-decoration:line-through}
   .gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
   .gal .card{max-width:none;min-width:0;padding:10px}
+
+  /* ---------- analytics ---------- */
+  .ov-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .ov-head h1{font-size:30px;font-weight:500}
+  .ov-head .sub{margin-top:4px;max-width:560px;font-size:13px}
+  .ov-ctrl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .chip{font-size:11px;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 10px}
+  .seg{display:flex;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:2px}
+  .seg button{border:none;background:none;padding:5px 11px;font-size:12px;color:var(--muted);border-radius:7px;cursor:pointer}
+  .seg button.on{background:var(--sand);color:var(--text);font-weight:600}
+  .banner{background:var(--accent-soft);border:1px solid #e6cfa6;color:#6b4a1c;border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .banner.err{background:#fbefeb;border-color:#efc2b6;color:var(--blush-ink)}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}
+  .kpi{border-radius:16px;padding:16px 18px;position:relative;overflow:hidden;min-height:118px}
+  .kpi.blush{background:var(--blush)}.kpi.sage{background:var(--sage)}.kpi.sand{background:var(--sand)}.kpi.clay{background:var(--clay)}
+  .kpi-ic{position:absolute;right:-8px;top:-8px;width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.4);display:grid;place-items:center;font-size:18px;padding:8px 8px 0 0}
+  .kpi-l{font-size:12px;color:var(--muted)}
+  .kpi-v{font-family:var(--serif);font-size:30px;margin:6px 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .kpi-s{font-size:11px;color:var(--muted);line-height:1.4}
+  .dl{font-family:"Segoe UI",system-ui,sans-serif;font-size:11px;font-weight:600;border-radius:20px;padding:2px 8px;background:rgba(255,255,255,.65)}
+  .dl.up{color:var(--sage-ink)}.dl.down{color:var(--blush-ink)}
+  .ov-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px}
+  .stack{display:flex;flex-direction:column;gap:14px}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:0}
+  .panel-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .panel-h small{font-size:11px;color:var(--faint)}
+  .panel-h select{padding:4px 8px;font-size:12px}
+  .views-wrap{display:grid;grid-template-columns:140px minmax(0,1fr);gap:10px;align-items:center}
+  .big{font-family:var(--serif);font-size:38px}
+  .big .dl{background:var(--blush)}
+  .big small{display:block;font-family:"Segoe UI",system-ui,sans-serif;font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+  .legend{font-size:11px;color:var(--muted);display:flex;gap:12px}
+  .legend i{display:inline-block;width:16px;height:0;border-top:2px solid;vertical-align:middle;margin-right:4px}
+  .svg{width:100%;height:auto;display:block}
+  .svg .grid{stroke:var(--line)}
+  .svg .ax{font-size:10px;fill:var(--faint)}
+  .svg .ax.b{fill:var(--sage-ink);font-weight:700}
+  .gauge-num{font-family:var(--serif);font-size:26px;fill:var(--text)}
+  .gauge-sub{font-size:10px;fill:var(--muted)}
+  .aud{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .aud div{padding:8px 4px 10px;border-bottom:2px solid}
+  .aud b{font-family:var(--serif);font-size:20px;display:block}
+  .aud small{font-size:11px;color:var(--muted)}
+  .chip-sm{font-size:10px;background:var(--accent-soft);color:#6b4a1c;border-radius:20px;padding:3px 9px}
+  .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .center{text-align:center}
+  .thumb{width:34px;height:34px;border-radius:8px;display:inline-grid;place-items:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+  .tc{display:flex;gap:10px;align-items:center}
+  .tc small{display:block;color:var(--muted);font-size:11px}
+  .hl{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+  .hl:last-child{border-bottom:none}
+  .hl-ic{width:30px;height:30px;border-radius:8px;background:var(--sand);display:grid;place-items:center;flex-shrink:0}
+  .hl small{display:block;color:var(--muted);font-size:11px}
+  .hl .r{margin-left:auto;text-align:right;font-weight:600;font-size:13px;white-space:nowrap}
+  .plat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:14px}
+  .mini{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
+  .mini div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .mini b{font-family:var(--serif);font-size:20px;display:block}
+  .mini small{font-size:11px;color:var(--muted)}
+
+  /* audit */
+  .audit-top{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .score{width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--serif);font-size:38px;line-height:1;flex-shrink:0}
+  .score small{font-size:11px;font-family:"Segoe UI",system-ui,sans-serif;color:var(--muted);margin-top:6px}
+  .a-sec{margin-top:16px}
+  .a-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+  .a-item b{display:block;font-size:14px;margin-bottom:3px}
+  .a-item span{font-size:12px;color:var(--muted);line-height:1.6}
+  .a-item.win{border-left:4px solid var(--sage-ink)}.a-item.fix{border-left:4px solid var(--blush-ink)}.a-item.idea{border-left:4px solid var(--accent)}.a-item.info{border-left:4px solid var(--faint)}
+
+  /* calendar */
+  .cal-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .cal-bar h2{min-width:150px;text-align:center}
+  .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+  .cal .dow{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:2px 6px}
+  .cal .day{background:var(--panel);border:1px solid var(--border);border-radius:10px;min-height:96px;padding:6px;font-size:11px;overflow:hidden}
+  .cal .day.out{opacity:.4}
+  .cal .day.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .cal .dn{font-weight:700;color:var(--muted);margin-bottom:4px}
+  .ev{border-radius:6px;padding:2px 6px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .ev.local{background:var(--sand);color:var(--sand-ink)}
+  .ev.notion{background:#e9e4df;color:var(--text)}
+  .ev.posted-ig{background:#f7e1e8;color:var(--ig)}.ev.posted-tt{background:#e9e4df;color:var(--tt)}
+  .cal-legend{display:flex;gap:12px;font-size:11px;color:var(--muted);margin:10px 0;flex-wrap:wrap}
+  .cal-legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+
+  /* settings */
+  .set-grid{display:grid;gap:14px;max-width:860px}
+  .set-grid .panel p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+  .set-grid input,.set-grid select{width:100%}
+  .row-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .test-out{font-size:12px;color:var(--muted);line-height:1.5}
+  .ok{color:var(--sage-ink)}.bad{color:var(--blush-ink)}
+  .ckline{display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);margin-top:10px}
+  .ckline input{width:auto}
+  details{font-size:12px;color:var(--muted);line-height:1.7}
+  details summary{cursor:pointer;color:var(--text);font-weight:600;margin:6px 0}
+  details ol{margin-left:18px}
+  code{background:var(--line);border-radius:4px;padding:1px 5px;font-size:11px}
+
+  @media (max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ov-grid{grid-template-columns:minmax(0,1fr)}}
+  @media (max-width:820px){
+    body{flex-direction:column;height:auto;overflow:auto}
+    nav{width:100%;flex-direction:row;flex-wrap:wrap;gap:4px}
+    .nav-group,.side-note,.clock{display:none}
+    .logo{width:100%}.acct{width:100%}
+    .nav-btn{width:auto}
+    main{padding:16px}
+    .views-wrap{grid-template-columns:minmax(0,1fr)}
+    .kpis{grid-template-columns:minmax(0,1fr)}
+    .cal .day{min-height:64px}
+  }
 </style>
 </head>
 <body>
 
 <nav>
   <div class="logo">🕯 Kenangkala <span>Studio</span></div>
+  <div class="acct">
+    <button class="acct-btn" id="acct-btn" type="button"><span class="av" id="acct-av">KS</span><span class="acct-txt"><b id="acct-name"></b><small id="acct-handle"></small></span><span class="caret">▾</span></button>
+    <div class="acct-menu" id="acct-menu"></div>
+  </div>
   <div class="clock" id="clock"></div>
-  <button class="nav-btn active" data-view="dashboard">🏠 Dashboard</button>
+  <div class="nav-group">Analytics</div>
+  <button class="nav-btn active" data-view="overview">📊 Overview</button>
+  <button class="nav-btn" data-view="platforms">📱 Platforms</button>
+  <button class="nav-btn" data-view="audit">🩺 Full Audit</button>
+  <div class="nav-group">Studio</div>
+  <button class="nav-btn" data-view="dashboard">🏠 Today</button>
   <button class="nav-btn" data-view="jobs">🗓 Jobs <span class="nav-count" id="nc-jobs">0</span></button>
   <button class="nav-btn" data-view="leads">💬 Leads <span class="nav-count" id="nc-leads">0</span></button>
-  <button class="nav-btn" data-view="content">💡 Content <span class="nav-count" id="nc-content">0</span></button>
-  <button class="nav-btn" data-view="bengkel">🛠 Bengkel <span class="nav-count" id="nc-bengkel">0</span></button>
   <button class="nav-btn" data-view="packages">💰 Packages</button>
   <button class="nav-btn" data-view="poses">🧍 Pose DB <span class="nav-count" id="nc-poses">0</span></button>
-  <button class="nav-btn" data-view="trends">📈 Trends</button>
-  <div class="side-note">Sample data only — nothing is saved between visits.</div>
+  <div class="nav-group">Strategy</div>
+  <button class="nav-btn" data-view="content">💡 Content Bank <span class="nav-count" id="nc-content">0</span></button>
+  <button class="nav-btn" data-view="calendar">📅 Content Calendar <span class="nav-count notion">Notion</span></button>
+  <button class="nav-btn" data-view="bengkel">🛠 Bengkel <span class="nav-count" id="nc-bengkel">0</span></button>
+  <button class="nav-btn" data-view="trends">📈 Trending Topics</button>
+  <div class="nav-group">Setup</div>
+  <button class="nav-btn" data-view="settings">⚙️ Settings &amp; Connections</button>
+  <div class="side-note">Studio board items are sample data and reset on reload. Analytics settings and access tokens are saved only in this browser — never in the website code.</div>
 </nav>
 
 <main>
-<!-- DASHBOARD -->
-<div class="view active" id="view-dashboard">
-  <div class="view-head"><h1>🏠 Dashboard</h1><div class="sub">Quick overview — details live in each tab.</div></div>
+<div class="topbar">
+  <div class="search"><span>🔍</span><input id="q" placeholder="Search anything — leads, jobs, content, poses…" autocomplete="off"><div class="search-res" id="search-res"></div></div>
+  <span class="spacer"></span>
+  <span class="pill" id="pill-notion"></span>
+  <span class="pill" id="pill-data"></span>
+  <button class="btn-ghost btn-sm" id="btn-refresh" onclick="refreshNow()" title="Pull fresh analytics now">↻ Refresh</button>
+</div>
+
+<!-- OVERVIEW -->
+<div class="view active" id="view-overview">
+  <div class="ov-head">
+    <div><h1 id="greet"></h1><div class="sub" id="greet-sub"></div></div>
+    <div class="ov-ctrl">
+      <span class="chip" id="asof"></span>
+      <div class="seg" id="range-seg"><button data-r="7">7 days</button><button data-r="30">30 days</button><button data-r="90">90 days</button></div>
+      <button class="btn btn-green" onclick="exportCSV()">⤓ Export</button>
+    </div>
+  </div>
+  <div id="ov-banner"></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="ov-grid">
+    <div class="panel">
+      <div class="panel-h"><h3>Views by week posted</h3><span class="legend" id="lg-views"></span></div>
+      <div class="views-wrap"><div class="big" id="views-big"></div><div id="chart-views"></div></div>
+      <div class="panel-h" style="margin-top:16px"><h3>Audience by platform</h3><span class="chip-sm" id="top-platform"></span></div>
+      <div class="aud" id="aud"></div>
+    </div>
+    <div class="stack">
+      <div class="panel"><div class="panel-h"><h3>Best day to post</h3><small>Avg views · 90 days</small></div><div id="chart-days"></div><div class="note" id="best-day-note"></div></div>
+      <div class="panel"><div class="panel-h"><h3>Posting consistency</h3><small>Last 4 weeks</small></div><div id="gauge"></div><div class="note center"><a href="#" onclick="go('calendar');return false">View calendar →</a></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Top content</h3><select id="top-sort" onchange="renderOverview()"><option value="views">Most views</option><option value="eng">Best engagement</option><option value="saves">Most saved</option></select></div>
+      <div class="tbl-wrap flat" id="top-content"></div>
+    </div>
+    <div class="panel"><div class="panel-h"><h3>Highlights</h3><small id="hl-range"></small></div><div id="highlights"></div></div>
+  </div>
+</div>
+
+<!-- PLATFORMS -->
+<div class="view" id="view-platforms">
+  <div class="view-head"><h1>📱 Platforms</h1><div class="sub">Each platform side by side for the selected range. Connect or fix a platform in Settings &amp; Connections.</div></div>
+  <div class="plat-grid" id="plat-grid"></div>
+  <div class="panel"><div class="panel-h"><h3>Head to head</h3><small id="plat-range"></small></div><div class="tbl-wrap flat" id="plat-table"></div></div>
+</div>
+
+<!-- AUDIT -->
+<div class="view" id="view-audit">
+  <div class="view-head"><h1>🩺 Full Audit</h1>
+    <button class="btn" onclick="runAudit()">Run full audit</button>
+    <button class="btn-ghost" id="btn-audit-dl" onclick="downloadAudit()" disabled>⤓ Download report</button>
+    <div class="sub">Checks views, consistency, best day, format, niche, platforms, engagement, posting gaps, your content pipeline and lead follow-ups — then tells you what to fix and what to make next.</div>
+  </div>
+  <div id="audit-out"><div class="empty">Press “Run full audit” to check the selected account.</div></div>
+</div>
+
+<!-- DASHBOARD (studio today) -->
+<div class="view" id="view-dashboard">
+  <div class="view-head"><h1>🏠 Today</h1><div class="sub">Quick studio overview — details live in each tab.</div></div>
   <div class="cards" style="margin-bottom:18px">
     <div class="stat accent"><b id="d-jobs">0</b><small>Jobs today</small></div>
     <div class="stat blue"><b id="d-leads">0</b><small>Leads</small></div>
@@ -128,7 +361,7 @@
 <!-- LEADS -->
 <div class="view" id="view-leads">
   <div class="view-head">
-    <h1>💬 Leads & Enquiries</h1>
+    <h1>💬 Leads &amp; Enquiries</h1>
     <select id="filter-leads" onchange="renderLeads()"><option value="all">All statuses</option><option>New</option><option>Follow Up</option><option>Quote Sent</option><option>Booked</option></select>
     <div class="sub">Reply buttons open WhatsApp Web / Instagram / Threads directly with a ready-made draft. Update the chat summary here after reviewing.</div>
   </div>
@@ -143,16 +376,34 @@
 <!-- CONTENT -->
 <div class="view" id="view-content">
   <div class="view-head">
-    <h1>💡 Content Gallery</h1>
+    <h1>💡 Content Bank</h1>
     <select id="filter-content" onchange="renderContent()"><option value="all">All</option><option>Idea</option><option>In Bengkel</option><option>Posted</option></select>
-    <div class="sub">Your visual idea board. ⤴ moves a killer shot into the Pose DB; 🛠 sends a complex piece to the Bengkel with a completion checklist.</div>
+    <div class="sub">Your visual idea board. Dated ideas appear on the Content Calendar and can be pushed to Notion. ⤴ moves a killer shot into the Pose DB; 🛠 sends a complex piece to the Bengkel with a completion checklist.</div>
   </div>
   <div class="add-row">
     <input id="in-c-title" placeholder="Shot / content idea"><input id="in-c-platform" placeholder="Platform">
-    <input id="in-c-due" placeholder="Due date"><select id="in-c-cx"><option value="simple">Simple — shoot & post</option><option value="complex">Complex — needs Bengkel</option></select>
+    <input id="in-c-due" type="date" title="Post date"><select id="in-c-cx"><option value="simple">Simple — shoot &amp; post</option><option value="complex">Complex — needs Bengkel</option></select>
     <button class="btn" onclick="addContent()">+ Add Idea</button>
   </div>
   <div class="gal" id="list-content"></div>
+</div>
+
+<!-- CALENDAR -->
+<div class="view" id="view-calendar">
+  <div class="view-head"><h1>📅 Content Calendar</h1><div class="sub">Planned content from the Content Bank, items synced from your Notion content calendar, and what you actually posted — on one calendar.</div></div>
+  <div class="cal-bar">
+    <button class="btn-ghost" onclick="shiftMonth(-1)">‹</button><h2 id="cal-title"></h2><button class="btn-ghost" onclick="shiftMonth(1)">›</button>
+    <button class="btn-ghost" onclick="calMonth=new Date();calMonth.setDate(1);renderCalendar()">Today</button>
+    <span class="spacer" style="flex:1"></span>
+    <button class="btn-ghost" id="btn-npull" onclick="notionPull()">⇣ Pull from Notion</button>
+    <button class="btn-ghost" id="btn-npush" onclick="notionPush()">⇡ Push to Notion</button>
+    <button class="btn-ghost" onclick="exportNotionCSV()">⤓ CSV for Notion</button>
+    <label class="btn-ghost" style="text-transform:none;letter-spacing:0;font-size:12px;color:var(--text);margin:0">⤒ Import Notion CSV<input type="file" accept=".csv,text/csv" style="display:none" onchange="importNotionCSV(this)"></label>
+  </div>
+  <div class="note" id="notion-msg" style="margin:-4px 0 10px"></div>
+  <div class="cal" id="cal"></div>
+  <div class="cal-legend"><span style="--c:var(--sand)">Planned (Content Bank)</span><span style="--c:#e9e4df">Notion</span><span style="--c:#f7e1e8">Posted · Instagram</span><span style="--c:#d8d1ca">Posted · TikTok</span></div>
+  <div class="panel" style="margin-top:6px"><div class="panel-h"><h3>Not scheduled yet</h3></div><div id="cal-unsched" class="meta"></div></div>
 </div>
 
 <!-- BENGKEL -->
@@ -163,7 +414,7 @@
 
 <!-- PACKAGES -->
 <div class="view" id="view-packages">
-  <div class="view-head"><h1>💰 Packages & Quotations</h1><div class="sub">Packages grouped by niche with design templates. Build a custom quote on the right, finalize, then push it to a lead for review.</div></div>
+  <div class="view-head"><h1>💰 Packages &amp; Quotations</h1><div class="sub">Packages grouped by niche with design templates. Build a custom quote on the right, finalize, then push it to a lead for review.</div></div>
   <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
     <div style="flex:1;min-width:340px">
       <h2 style="margin-bottom:8px">Package database (by niche)</h2>
@@ -175,7 +426,7 @@
       </div>
     </div>
     <div style="flex:1;min-width:330px">
-      <h2 style="margin-bottom:8px">Custom & finalize</h2>
+      <h2 style="margin-bottom:8px">Custom &amp; finalize</h2>
       <div class="row2">
         <div><label>Lead to quote</label><select id="q-lead" style="width:100%"></select></div>
         <div><label>Package base</label><select id="q-pkg" style="width:100%" onchange="renderPkgBuilder()"></select></div>
@@ -212,20 +463,51 @@
 
 <!-- TRENDS -->
 <div class="view" id="view-trends">
-  <div class="view-head"><h1>📈 Trends Radar</h1><div class="sub">Awareness only — what's hot on social right now. Send anything here to Content to start producing it.</div></div>
+  <div class="view-head"><h1>📈 Trending Topics</h1><div class="sub">Awareness only — what's hot in your niche right now. Send anything here to the Content Bank to start producing it.</div></div>
   <div class="cards" id="trend-cards"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view" id="view-settings">
+  <div class="view-head"><h1>⚙️ Settings &amp; Connections</h1><div class="sub">Connect your real accounts. Everything you type here is stored only in this browser on this device — it is never written into the website code or sent anywhere except the platform it belongs to (or your own relay).</div></div>
+  <div class="set-grid" id="settings-body"></div>
 </div>
 </main>
 
 <script>
 /* ================= HELPERS ================= */
-const esc=s=>String(s??"").replace(/</g,"&lt;");
-const img=(seed,w=420,h=280)=>`https://picsum.photos/seed/${seed}/${w}/${h}`;
+const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const hash=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h);};
+/* Built-in placeholder pictures (no outside image service is contacted). */
+const PH_TONES=[["#f3d9c4","#d39b74"],["#e9dfcc","#b49c72"],["#f5d9d1","#c98578"],["#dfe7d0","#93a979"],["#efe2c9","#c49a5c"],["#e9dfe9","#a990ae"]];
+const img=(seed,w=420,h=280)=>{
+  const t=PH_TONES[hash(seed)%PH_TONES.length],r=hash(seed+"#"),cx=15+r%70,cy=20+(r>>4)%60,m=Math.min(w,h);
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${t[0]}'/><stop offset='1' stop-color='${t[1]}'/></linearGradient></defs><rect width='100%' height='100%' fill='url(#g)'/><circle cx='${cx}%' cy='${cy}%' r='${m*.34}' fill='#fff' fill-opacity='.16'/><g transform='translate(${w/2} ${h/2})' fill='none' stroke='#fff' stroke-opacity='.8' stroke-width='${m/90}'><rect x='${-m*.13}' y='${-m*.085}' width='${m*.26}' height='${m*.17}' rx='${m*.025}'/><circle r='${m*.05}'/><path d='M${-m*.05} ${-m*.085}l${m*.02} ${-m*.03}h${m*.06}l${m*.02} ${m*.03}'/></g></svg>`;
+  return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+};
 const pic=(seed,label,w=420,h=280)=>`<figure><img class="ph" src="${img(seed,w,h)}" alt="${esc(label)}" onerror="this.style.display='none'"><div>${esc(label)}</div></figure>`;
 const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes();};
 const fmt=m=>String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(Math.round(m%60)).padStart(2,"0");
 const mapsUrl=v=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(v);
 const statusClass=s=>({"Planned":"s-planned","In Progress":"s-progress","Done":"s-done","New":"s-new","Follow Up":"s-followup","Quote Sent":"s-quote","Booked":"s-booked","Idea":"s-idea","In Bengkel":"s-progress","Posted":"s-ready"})[s]||"s-planned";
+const DAY=864e5;
+const dkey=d=>{if(typeof d==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(d))return d;const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");};
+const fromKey=k=>{const[y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d);};
+const fmtDate=d=>{if(!d)return "—";const x=typeof d==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(d)?fromKey(d):new Date(d);return isNaN(x)?String(d):x.toLocaleDateString("en-GB",{day:"numeric",month:"short"});};
+const nk=n=>{n=Math.round(n||0);const a=Math.abs(n);return a>=1e6?(n/1e6).toFixed(a>=1e7?0:1).replace(/\.0$/,"")+"M":a>=1e4?Math.round(n/1e3)+"K":a>=1e3?(n/1e3).toFixed(1).replace(/\.0$/,"")+"K":String(n);};
+const pct=x=>(x*100).toFixed(1)+"%";
+const sum=(a,f)=>a.reduce((s,x)=>s+(+f(x)||0),0);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},del(k){try{localStorage.removeItem(k);}catch(e){}}};
+function download(name,text,type="text/plain"){const b=new Blob([text],{type});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);}
+const toCSV=rows=>rows.map(r=>r.map(v=>{v=String(v??"");return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(",")).join("\r\n");
+function parseCSV(t){
+  t=t.replace(/^﻿/,"");const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+    else if(c==='"')q=true;else if(c===','){row.push(f);f="";}else if(c==='\n'){row.push(f);rows.push(row);row=[];f="";}else if(c!=='\r')f+=c;}
+  if(f||row.length){row.push(f);rows.push(row);}
+  return rows.filter(r=>r.some(x=>x.trim()));
+}
 
 /* ================= NICHE BRIEFS ================= */
 const NICHE_BRIEF={
@@ -260,8 +542,9 @@ const NICHE_BRIEF={
   outdoor:[["Lake Gardens open lawn","lake-lawn"],["Playground golden hour","playground-golden"]]}
 };
 
-/* ================= DATA ================= */
+/* ================= STUDIO DATA (sample) ================= */
 let now0=nowMin();
+const inDays=n=>dkey(Date.now()+n*DAY);
 let jobs=[
  {id:1,name:"Aisyah & Farid Wedding",venue:"Hotel Equatorial, Kuala Lumpur",date:"Today",niche:"Wedding",start:now0-90,end:now0+45},
  {id:2,name:"Siti Aminah — Solemnisation",venue:"Masjid Negara, Kuala Lumpur",date:"Today",niche:"Solemnisation",start:now0+120,end:now0+210},
@@ -285,10 +568,10 @@ let poses=[
  {id:10,t:"Dip / twirl motion shot",niche:"Wedding",sit:"Outdoor",pax:2,prompt:"\"I'll count 3-2-1 — on 3, dip like the song just hit the chorus!\"",seed:"pose-dip",on:true}
 ];
 let content=[
- {id:11,t:"Golden hour backlit couple silhouette",platform:"Instagram Reels",due:"20 Nov",st:"Idea",cx:"simple",seed:"idea-silhouette"},
- {id:12,t:"Cinematic letterbox wedding teaser",platform:"TikTok",due:"28 Nov",st:"In Bengkel",cx:"complex",seed:"idea-letterbox"},
- {id:13,t:"Flash dancefloor photo dump",platform:"Instagram",due:"1 Dec",st:"Idea",cx:"simple",seed:"idea-flash"},
- {id:14,t:"POV: bridesmaid holding back tears",platform:"Reels + Threads",due:"25 Nov",st:"Idea",cx:"complex",seed:"idea-pov"}
+ {id:11,t:"Golden hour backlit couple silhouette",platform:"Instagram Reels",due:inDays(0),st:"Idea",cx:"simple",seed:"idea-silhouette"},
+ {id:12,t:"Cinematic letterbox wedding teaser",platform:"TikTok",due:inDays(8),st:"In Bengkel",cx:"complex",seed:"idea-letterbox"},
+ {id:13,t:"Flash dancefloor photo dump",platform:"Instagram",due:inDays(11),st:"Idea",cx:"simple",seed:"idea-flash"},
+ {id:14,t:"POV: bridesmaid holding back tears",platform:"Reels + Threads",due:inDays(5),st:"Idea",cx:"complex",seed:"idea-pov"}
 ];
 let bengkel=[
  {id:15,t:"Cinematic letterbox wedding teaser",ck:[["Raw footage from wedding day received",true],["Pick 6 hero moments",true],["Add letterbox crop + teal-orange grade",false],["Layer vows audio under music",false],["Caption + hashtag set",false],["Schedule post / Meta Ad",false]]}
@@ -319,13 +602,520 @@ const TRENDS=[
  ["Less is more","Instagram","Minimal decor, clean tablescapes, emotion over spectacle.","minimal"]
 ];
 
-/* ================= NAV ================= */
-document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
-  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");
-  document.getElementById("view-"+b.dataset.view).classList.add("active");
-}));
+/* ================= SETTINGS & ACCOUNTS (this browser only) ================= */
+const PLATS=["Instagram","TikTok"];
+const PCOLOR={Instagram:"var(--ig)",TikTok:"var(--tt)"};
+const BENCH={Instagram:.03,TikTok:.045};
+const newAccount=(name="Kenangkala Studio")=>({id:"a"+Date.now().toString(36),name,handle:"",target:4,igHost:"graph.instagram.com",igUser:"me",igToken:"",ttMode:"direct",ttToken:""});
+const DEFAULT_SETTINGS={owner:"",current:"kk",autoRefresh:true,
+  accounts:[{id:"kk",name:"Kenangkala Studio",handle:"",target:4,igHost:"graph.instagram.com",igUser:"me",igToken:"",ttMode:"direct",ttToken:""}],
+  relay:{url:"",key:""},notion:{db:"",title:"Name",date:"Date",status:"Status",platform:"Platform"}};
+let S=Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),LS.get("kk.settings",{}));
+S.relay=Object.assign({},DEFAULT_SETTINGS.relay,S.relay);S.notion=Object.assign({},DEFAULT_SETTINGS.notion,S.notion);
+if(!Array.isArray(S.accounts)||!S.accounts.length)S.accounts=JSON.parse(JSON.stringify(DEFAULT_SETTINGS.accounts));
+const saveS=()=>LS.set("kk.settings",S);
+const acct=()=>S.accounts.find(a=>a.id===S.current)||S.accounts[0];
+const ttOn=a=>a.ttMode==="relay"?!!S.relay.url:!!a.ttToken;
+const isConnected=a=>!!a.igToken||ttOn(a);
+let range=[7,30,90].includes(LS.get("kk.range",30))?LS.get("kk.range",30):30;
+
+/* ================= DEMO DATA (until accounts are connected) ================= */
+function rng(seed){let h=2166136261;for(const c of String(seed))h=Math.imul(h^c.charCodeAt(0),16777619);return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+const DEMO_TITLES={
+  Wedding:["First look by the lake","Flash dancefloor photo dump","A whole wedding day in 60 seconds","Bride getting ready: quiet frames","Golden hour couple walk"],
+  Tunang:["Ring moment, macro sequence","Tunang day candid laughter","POV: you just said yes"],
+  Convo:["Convo day jump shots","Scroll toss in slow motion","The family badge moment","Graduates at the main gate"],
+  Food:["Nasi lemak hero shot BTS","Menu shoot: steam & sauce drip","Overhead spread for a cafe menu"],
+  Solemnisation:["Akad in one breath","Pelamin details that matter","Salam & blessings"],
+  Portraiture:["One studio, three looks","Retro peace-sign portrait","Window-light headshot"],
+  Family:["Family huddle, pure laughter","Lake Gardens family picnic shoot"]
+};
+function demoData(a){
+  const r=rng("demo-"+a.id),posts=[],now=Date.now(),niches=Object.keys(DEMO_TITLES);
+  const nB={Convo:1.8,Wedding:1.4,Tunang:1.2,Food:.65,Solemnisation:1,Portraiture:.8,Family:.9};
+  const dB=[.8,.7,.85,1,1.9,1.15,1.05];
+  for(let d=150;d>=0;d--){
+    for(const p of PLATS){
+      if(r()>(p==="Instagram"?.3:.2))continue;
+      const date=new Date(now-d*DAY);date.setHours(9+Math.floor(r()*12),Math.floor(r()*60),0,0);
+      if(date.getTime()>now)continue;
+      const niche=niches[Math.floor(r()*niches.length)],fl=p==="Instagram"?["Reel","Reel","Carousel","Photo"]:["Video"],format=fl[Math.floor(r()*fl.length)];
+      const fB={Reel:1.6,Carousel:.9,Photo:.5,Video:1}[format],growth=1+(150-d)/260;
+      const views=Math.round((p==="TikTok"?2600:1500)*fB*nB[niche]*dB[date.getDay()]*growth*(.4+r()*1.4));
+      const likes=Math.round(views*(.025+r()*.04)),comments=Math.round(likes*(.04+r()*.08)),shares=Math.round(views*(.002+r()*.01)),saves=Math.round(views*(p==="Instagram"?.004+r()*.02:.002+r()*.006));
+      const tl=DEMO_TITLES[niche];
+      posts.push({id:`demo_${p}_${d}`,platform:p,title:tl[Math.floor(r()*tl.length)],niche,format,date:date.toISOString(),views,likes,comments,shares,saves,url:""});
+    }
+  }
+  const followers={Instagram:Math.round(4200+r()*2500),TikTok:Math.round(2600+r()*2400)},igRate=1+r()*2.5,ttRate=6+r()*12,history=[];
+  for(let d=150;d>=0;d--){const t=now-d*DAY;history.push({d:dkey(t),t,Instagram:Math.round(followers.Instagram-igRate*d),TikTok:Math.round(followers.TikTok-ttRate*d)});}
+  return {mode:"demo",posts,followers,history,errors:{},fetchedAt:now};
+}
+
+/* ================= LIVE DATA ================= */
+const A={};
+function guessNiche(t){t=(t||"").toLowerCase();
+  if(/tunang|engage|proposal|cincin/.test(t))return "Tunang";
+  if(/akad|nikah|solemn|pelamin/.test(t))return "Solemnisation";
+  if(/convo|graduat|konvo|scroll/.test(t))return "Convo";
+  if(/food|menu|makan|cafe|dish|nasi|restaurant/.test(t))return "Food";
+  if(/family|keluarga|kids|anak/.test(t))return "Family";
+  if(/wedding|kahwin|bride|groom|sanding|reception|resepsi/.test(t))return "Wedding";
+  if(/portrait|headshot|potret/.test(t))return "Portraiture";
+  return "Other";}
+async function getJSON(url,opt){
+  const r=await fetch(url,opt);let d={};try{d=await r.json();}catch(e){}
+  const e=d&&d.error; // Meta: {error:{message,code:190}} · TikTok: {error:{code:"ok"}} on success
+  if(!r.ok||(e&&(typeof e!=="object"||e.code!=="ok"))){
+    const m=e&&typeof e==="object"?(e.message||e.code):(typeof e==="string"?e:d.message);
+    throw new Error(m||("HTTP "+r.status));}
+  return d;}
+async function fetchInstagram(a){
+  const base="https://"+(a.igHost||"graph.instagram.com"),uid=encodeURIComponent(a.igUser||"me"),tok=encodeURIComponent(a.igToken);
+  const prof=await getJSON(`${base}/${uid}?fields=username,followers_count,media_count&access_token=${tok}`);
+  const since=Date.now()-180*DAY;let media=[],url=`${base}/${uid}/media?fields=id,caption,media_type,media_product_type,timestamp,like_count,comments_count,permalink&limit=50&access_token=${tok}`;
+  while(url&&media.length<200){const d=await getJSON(url);const rows=d.data||[];media.push(...rows);const last=rows[rows.length-1];if(!last||Date.parse(last.timestamp)<since)break;url=d.paging&&d.paging.next;}
+  media=media.filter(m=>Date.parse(m.timestamp)>=since);
+  const insights=async m=>{for(const metric of["views,saved,shares","reach,saved,shares","reach"]){try{const d=await getJSON(`${base}/${m.id}/insights?metric=${metric}&access_token=${tok}`);const o={};(d.data||[]).forEach(x=>o[x.name]=(x.values&&x.values[0]&&x.values[0].value)??(x.total_value&&x.total_value.value)??0);return o;}catch(e){}}return {};};
+  const out=[];
+  for(let i=0;i<media.length;i+=6){const chunk=media.slice(i,i+6);const ins=await Promise.all(chunk.map(insights));
+    chunk.forEach((m,j)=>{const o=ins[j],cap=(m.caption||"").split("\n")[0].trim();
+      out.push({id:"ig_"+m.id,platform:"Instagram",title:cap?cap.slice(0,90):"(no caption)",niche:guessNiche(m.caption),
+        format:m.media_product_type==="REELS"?"Reel":m.media_type==="CAROUSEL_ALBUM"?"Carousel":m.media_type==="VIDEO"?"Video":"Photo",
+        date:m.timestamp,views:o.views??o.reach??0,likes:m.like_count||0,comments:m.comments_count||0,shares:o.shares||0,saves:o.saved||0,url:m.permalink||""});});}
+  return {followers:prof.followers_count||0,handle:prof.username||"",posts:out};
+}
+async function fetchTikTok(a){
+  const relay=a.ttMode==="relay";
+  const base=relay?S.relay.url.replace(/\/+$/,"")+"/tiktok":"https://open.tiktokapis.com";
+  const headers=relay?{"X-Relay-Key":S.relay.key||""}:{Authorization:"Bearer "+a.ttToken};
+  const u=await getJSON(`${base}/v2/user/info/?fields=open_id,display_name,follower_count,video_count`,{headers});
+  const since=Date.now()-180*DAY,vids=[];let cursor=null,more=true;
+  while(more&&vids.length<200){
+    const d=await getJSON(`${base}/v2/video/list/?fields=id,title,video_description,create_time,view_count,like_count,comment_count,share_count,share_url`,{method:"POST",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(cursor?{max_count:20,cursor}:{max_count:20})});
+    const v=(d.data&&d.data.videos)||[];vids.push(...v);more=!!(d.data&&d.data.has_more)&&v.length>0;cursor=d.data&&d.data.cursor;
+    if(v.length&&v[v.length-1].create_time*1000<since)break;}
+  return {followers:(u.data&&u.data.user&&u.data.user.follower_count)||0,posts:vids.filter(v=>v.create_time*1000>=since).map(v=>{const t=(v.title||v.video_description||"").split("\n")[0].trim();
+    return {id:"tt_"+v.id,platform:"TikTok",title:t?t.slice(0,90):"(no caption)",niche:guessNiche(v.title||v.video_description),format:"Video",date:new Date(v.create_time*1000).toISOString(),
+      views:v.view_count||0,likes:v.like_count||0,comments:v.comment_count||0,shares:v.share_count||0,saves:0,url:v.share_url||""};})};
+}
+async function syncAccount(a){
+  if(!isConnected(a)){A[a.id]=demoData(a);return A[a.id];}
+  const prev=A[a.id];if(prev)prev.loading=true;
+  const res={mode:"live",posts:[],followers:{},errors:{},fetchedAt:Date.now()},tasks=[];
+  if(a.igToken)tasks.push(fetchInstagram(a).then(r=>{res.posts.push(...r.posts);res.followers.Instagram=r.followers;if(r.handle&&!a.handle){a.handle=r.handle;saveS();}}).catch(e=>res.errors.Instagram=e.message||String(e)));
+  if(ttOn(a))tasks.push(fetchTikTok(a).then(r=>{res.posts.push(...r.posts);res.followers.TikTok=r.followers;}).catch(e=>res.errors.TikTok=(e.message||String(e))+(a.ttMode==="direct"&&/fetch/i.test(e.message||"")?" — the browser may be blocked by TikTok; use the relay option":"")));
+  await Promise.all(tasks);
+  const cached=LS.get("kk.cache."+a.id,null);
+  // keep last good data for a platform that failed this time
+  if(cached)for(const p of Object.keys(res.errors)){if(cached.followers&&cached.followers[p]!=null){res.followers[p]=cached.followers[p];res.posts.push(...(cached.posts||[]).filter(x=>x.platform===p));res.stale=true;}}
+  if(Object.keys(res.followers).length){
+    const k="kk.snap."+a.id,snaps=LS.get(k,[]),today=dkey(Date.now()),row={d:today,t:Date.now(),...res.followers},last=snaps[snaps.length-1];
+    if(last&&last.d===today)snaps[snaps.length-1]=Object.assign(last,row);else snaps.push(row);LS.set(k,snaps.slice(-500));
+    LS.set("kk.cache."+a.id,{posts:res.posts,followers:res.followers,fetchedAt:res.fetchedAt});}
+  res.history=LS.get("kk.snap."+a.id,[]);
+  A[a.id]=res;return res;
+}
+function data(){
+  const a=acct();
+  if(!A[a.id]){
+    if(isConnected(a)){const c=LS.get("kk.cache."+a.id,null);
+      A[a.id]=c?{mode:"live",posts:c.posts||[],followers:c.followers||{},fetchedAt:c.fetchedAt,history:LS.get("kk.snap."+a.id,[]),errors:{},stale:true}:{mode:"live",posts:[],followers:{},history:[],errors:{},fetchedAt:0,loading:true};}
+    else A[a.id]=demoData(a);}
+  return A[a.id];
+}
+let refreshing=false;
+async function refreshNow(){
+  if(refreshing)return;refreshing=true;const b=document.getElementById("btn-refresh");b.disabled=true;b.textContent="↻ Syncing…";
+  const a=acct();if(isConnected(a)){data().loading=true;renderPills();}
+  try{await syncAccount(a);}finally{refreshing=false;b.disabled=false;b.textContent="↻ Refresh";renderAnalytics();}
+}
+setInterval(()=>{if(S.autoRefresh&&isConnected(acct()))refreshNow();},15*60*1000);
+
+/* ================= METRICS ================= */
+const inRange=(p,from,to)=>{const t=Date.parse(p.date);return t>=from&&t<to;};
+const engOf=p=>(p.likes||0)+(p.comments||0)+(p.shares||0)+(p.saves||0);
+const stats=ps=>{const v=sum(ps,p=>p.views);return {views:v,posts:ps.length,eng:v?sum(ps,engOf)/v:0};};
+const followersAt=(D,t)=>{let best=null;for(const s of D.history||[])if(s.t<=t)best=s;return best;};
+function groupAvg(ps,key,min=1){const g={};ps.forEach(p=>{const k=p[key]||"Other";(g[k]=g[k]||[]).push(p.views||0);});
+  return Object.entries(g).filter(([,v])=>v.length>=min).map(([k,v])=>({k,avg:v.reduce((a,b)=>a+b,0)/v.length,n:v.length})).sort((a,b)=>b.avg-a.avg);}
+const DAYN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function dayAvgs(ps){const t=[0,0,0,0,0,0,0],n=[0,0,0,0,0,0,0];ps.forEach(p=>{const d=new Date(p.date).getDay();t[d]+=p.views||0;n[d]++;});return t.map((v,i)=>n[i]?v/n[i]:0);}
+function deltaBadge(cur,prev){if(!prev)return cur?`<span class="dl up">new</span>`:"";const ch=(cur-prev)/prev*100;return `<span class="dl ${ch>=0?"up":"down"}">${ch>=0?"↑":"↓"} ${ch>=200?"×"+(cur/prev).toFixed(cur/prev>=10?0:1):Math.abs(ch).toFixed(1)+"%"}</span>`;}
+function platformsOf(D){const s=new Set(Object.keys(D.followers||{}));(D.posts||[]).forEach(p=>s.add(p.platform));return PLATS.filter(p=>s.has(p));}
+
+/* ================= CHARTS (inline SVG, no libraries) ================= */
+function niceMax(v){if(v<=0)return 10;const p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return(n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p;}
+function lineChart(labels,series,W=640,H=210){
+  const L=44,R=12,T=12,B=24,w=W-L-R,h=H-T-B,max=niceMax(Math.max(1,...series.flatMap(s=>s.values)));
+  const x=i=>L+(labels.length<2?w/2:i*w/(labels.length-1)),y=v=>T+h-(v/max)*h;let g="";
+  for(let i=0;i<=4;i++){const v=max*i/4,yy=y(v).toFixed(1);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="grid"/><text x="${L-6}" y="${+yy+3}" text-anchor="end" class="ax">${nk(v)}</text>`;}
+  const step=Math.ceil(labels.length/7);
+  labels.forEach((lb,i)=>{if(i%step===0||i===labels.length-1)g+=`<text x="${x(i).toFixed(1)}" y="${H-6}" text-anchor="middle" class="ax">${esc(lb)}</text>`;});
+  series.forEach(s=>{
+    g+=`<path d="${s.values.map((v,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("")}" fill="none" style="stroke:${s.color}" stroke-width="2" ${s.dash?'stroke-dasharray="5 4"':""} stroke-linejoin="round" stroke-linecap="round"/>`;
+    s.values.forEach((v,i)=>g+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" style="fill:${s.color}"/><circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="9" fill="transparent"><title>Week of ${esc(labels[i])} · ${esc(s.name)}: ${Math.round(v).toLocaleString()} views</title></circle>`);});
+  return `<svg viewBox="0 0 ${W} ${H}" class="svg" role="img" aria-label="Views by week posted">${g}</svg>`;
+}
+function barChart(vals,labels,W=300,H=150){
+  const T=16,B=20,h=H-T-B,n=vals.length,gap=10,bw=(W-gap*(n+1))/n,max=Math.max(1,...vals),best=vals.indexOf(Math.max(...vals));let g="";
+  vals.forEach((v,i)=>{const bh=Math.max(5,v/max*h),x=gap+i*(bw+gap),yy=T+h-bh;
+    g+=`<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="${Math.min(9,bw/2).toFixed(1)}" style="fill:${i===best&&v>0?"var(--sage-ink)":"var(--sand)"}"><title>${labels[i]}: ${nk(v)} avg views</title></rect><text x="${(x+bw/2).toFixed(1)}" y="${H-5}" text-anchor="middle" class="ax">${labels[i]}</text>`;
+    if(i===best&&v>0)g+=`<text x="${(x+bw/2).toFixed(1)}" y="${(yy-4).toFixed(1)}" text-anchor="middle" class="ax b">${nk(v)}</text>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" class="svg" role="img" aria-label="Average views by weekday">${g}</svg>`;
+}
+function gauge(p,sub){
+  const N=40,cx=120,cy=104,r1=66,r2=90;let g="";
+  for(let i=0;i<N;i++){const t=i/(N-1),a=Math.PI*(1-t);g+=`<line x1="${(cx+r1*Math.cos(a)).toFixed(1)}" y1="${(cy-r1*Math.sin(a)).toFixed(1)}" x2="${(cx+r2*Math.cos(a)).toFixed(1)}" y2="${(cy-r2*Math.sin(a)).toFixed(1)}" style="stroke:${p>0&&t<=p?"var(--sage-ink)":"var(--border)"}" stroke-width="3.2" stroke-linecap="round"/>`;}
+  g+=`<text x="${cx}" y="${cy-14}" text-anchor="middle" class="gauge-num">${Math.round(p*100)}%</text><text x="${cx}" y="${cy+2}" text-anchor="middle" class="gauge-sub">${esc(sub)}</text>`;
+  return `<svg viewBox="0 0 240 112" class="svg" style="max-width:260px;margin:0 auto" role="img" aria-label="Posting consistency">${g}</svg>`;
+}
+
+/* ================= OVERVIEW ================= */
+function renderOverview(){
+  const a=acct(),D=data(),R=range,now=Date.now(),from=now-R*DAY,pfrom=from-R*DAY;
+  const cur=D.posts.filter(p=>inRange(p,from,now)),prev=D.posts.filter(p=>inRange(p,pfrom,from)),sc=stats(cur),sp=stats(prev),plats=platformsOf(D);
+  const h=new Date().getHours(),greet=h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+  document.getElementById("greet").textContent=greet+(S.owner?", "+S.owner:"");
+  document.getElementById("greet-sub").textContent=D.loading&&!D.posts.length?"Pulling your latest analytics…":`${a.name} had ${nk(sc.views)} views across ${sc.posts} post${sc.posts===1?"":"s"} in the last ${R} days. Here's what's working and what to make next.`;
+  document.getElementById("asof").textContent="📅 Data as of "+(D.fetchedAt?new Date(D.fetchedAt).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"—");
+  document.querySelectorAll("#range-seg button").forEach(b=>b.classList.toggle("on",+b.dataset.r===R));
+  const errs=Object.entries(D.errors||{});
+  document.getElementById("ov-banner").innerHTML=D.mode==="demo"
+    ?`<div class="banner"><span>✨ You're looking at <b>demo numbers</b>. Connect Instagram and TikTok to see your real analytics.</span><button class="btn btn-sm" onclick="go('settings')">Connect accounts</button></div>`
+    :errs.length?`<div class="banner err"><span>⚠ ${errs.map(([p,m])=>`<b>${esc(p)}</b>: ${esc(m)}`).join(" · ")}${D.stale?" — showing the last good data for it.":""}</span><button class="btn-ghost btn-sm" onclick="go('settings')">Fix in Settings</button></div>`:"";
+  // KPIs
+  const totalNow=sum(plats,p=>D.followers[p]);let net=0,netTxt="",ago=followersAt(D,from);
+  const baseSnap=ago||(D.history&&D.history[0]);
+  if(baseSnap){net=sum(plats,p=>(D.followers[p]??0)-(baseSnap[p]??D.followers[p]??0));
+    netTxt=plats.map(p=>`${p} ${(D.followers[p]??0)-(baseSnap[p]??D.followers[p]??0)>=0?"+":""}${nk((D.followers[p]??0)-(baseSnap[p]??D.followers[p]??0))}`).join(" · ")+(ago?"":` · tracking since ${fmtDate(baseSnap.d)}`);}
+  const byP=plats.map(p=>`${cur.filter(x=>x.platform===p).length} ${p}`).join(" · ");
+  const kpi=(cls,icon,label,val,badge,sub)=>`<div class="kpi ${cls}"><div class="kpi-ic">${icon}</div><div class="kpi-l">${label}</div><div class="kpi-v">${val}${badge}</div><div class="kpi-s">${sub}</div></div>`;
+  const engPts=(sc.eng-sp.eng)*100;
+  document.getElementById("kpis").innerHTML=
+    kpi("blush","👁",`Views, last ${R} days`,nk(sc.views),deltaBadge(sc.views,sp.views),`vs ${nk(sp.views)} the ${R} days before`)+
+    kpi("sage","♡","Avg engagement",pct(sc.eng),sp.posts?`<span class="dl ${engPts>=0?"up":"down"}">${engPts>=0?"↑":"↓"} ${Math.abs(engPts).toFixed(1)} pts</span>`:"",`vs ${pct(sp.eng)} the ${R} days before`)+
+    kpi("sand","👥",`Net followers, ${R} days`,`${net>=0?"+":""}${nk(net)}`,"",`${netTxt||"—"}<br>${nk(totalNow)} total`)+
+    kpi("clay","▣",`Posts, last ${R} days`,sc.posts,deltaBadge(sc.posts,sp.posts),byP||"—");
+  // Views by week
+  const W=R===7?6:R===30?10:13,labels=[],series=[];
+  for(let i=0;i<W;i++)labels.push(fmtDate(now-(W-i)*7*DAY));
+  plats.forEach(p=>series.push({name:p,color:PCOLOR[p],dash:p==="Instagram",values:Array.from({length:W},(_,i)=>sum(D.posts.filter(x=>x.platform===p&&inRange(x,now-(W-i)*7*DAY,now-(W-i-1)*7*DAY)),x=>x.views))}));
+  document.getElementById("chart-views").innerHTML=series.length?lineChart(labels,series):`<div class="empty">No posts yet.</div>`;
+  document.getElementById("lg-views").innerHTML=plats.map(p=>`<span><i style="border-color:${PCOLOR[p]};${p==="Instagram"?"border-top-style:dashed":""}"></i>${p}</span>`).join("");
+  document.getElementById("views-big").innerHTML=`${nk(sc.views)}<div style="margin-top:6px">${deltaBadge(sc.views,sp.views)}</div><small>last ${R} days vs. the ${R} before</small>`;
+  // Audience
+  const viewsBy=PLATS.map(p=>({p,v:sum(cur.filter(x=>x.platform===p),x=>x.views)})).sort((x,y)=>y.v-x.v);
+  document.getElementById("top-platform").textContent=viewsBy[0]&&viewsBy[0].v?"Top platform: "+viewsBy[0].p:"";
+  document.getElementById("aud").innerHTML=[...PLATS,"Threads"].map(p=>D.followers[p]!=null
+    ?`<div style="border-color:${PCOLOR[p]||"var(--muted)"}"><b>${(D.followers[p]).toLocaleString()}</b><small>${p} followers</small></div>`
+    :`<div style="border-color:var(--border)"><b style="color:var(--faint);font-size:14px">${p==="Threads"?"Not tracked":"Not connected"}</b><small>${p}${p==="Threads"?" — no public stats API in use":` — <a href="#" onclick="go('settings');return false">connect</a>`}</small></div>`).join("");
+  // Best day
+  const days=dayAvgs(D.posts.filter(p=>inRange(p,now-90*DAY,now))),order=[1,2,3,4,5,6,0],vals=order.map(i=>days[i]);
+  document.getElementById("chart-days").innerHTML=barChart(vals,order.map(i=>DAYN[i].slice(0,3)));
+  const bi=days.indexOf(Math.max(...days)),avgAll=stats(D.posts.filter(p=>inRange(p,now-90*DAY,now)));
+  document.getElementById("best-day-note").innerHTML=days[bi]>0?`<b>${DAYN[bi]}</b> posts average ${nk(days[bi])} views${avgAll.posts?` — ${(days[bi]/(avgAll.views/avgAll.posts)).toFixed(1)}× your average`:""}.`:"Post a few times to find your best day.";
+  // Consistency
+  const p28=D.posts.filter(p=>inRange(p,now-28*DAY,now)).length,goal=a.target*4;
+  document.getElementById("gauge").innerHTML=gauge(Math.min(1,p28/goal),`${p28} of ${goal} posts in 4 weeks`);
+  // Top content
+  const sortBy=document.getElementById("top-sort").value,score=p=>sortBy==="eng"?(p.views?engOf(p)/p.views:0):sortBy==="saves"?(p.saves||0)+(p.shares||0):p.views;
+  const top=[...cur].sort((x,y)=>score(y)-score(x)).slice(0,6);
+  document.getElementById("top-content").innerHTML=top.length?`<table><thead><tr><th>Content</th><th>Platform</th><th>Format</th><th class="num">Views</th><th class="num">Eng.</th></tr></thead><tbody>${top.map((p,i)=>`<tr>
+      <td><div class="tc"><span class="thumb" style="background:${p.platform==="TikTok"?"#5b4f47":"#c98a9c"}">${i+1}</span><div>${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${esc(p.title)}</a>`:esc(p.title)}<small>#${i+1} · ${fmtDate(p.date)}${p.niche&&p.niche!=="Other"?" · "+esc(p.niche):""}</small></div></div></td>
+      <td><span class="tag ${p.platform==="TikTok"?"tt":"ig"}">${esc(p.platform)}</span></td><td>${esc(p.format)}</td><td class="num">${nk(p.views)}</td><td class="num">${p.views?pct(engOf(p)/p.views):"—"}</td></tr>`).join("")}</tbody></table>`
+    :`<div class="empty">No posts in the last ${R} days.</div>`;
+  // Highlights
+  document.getElementById("hl-range").textContent=`Last ${R} days`;
+  const pick=f=>[...cur].sort((x,y)=>f(y)-f(x))[0],tv=pick(p=>p.views),ts=pick(p=>p.saves+p.shares),te=pick(p=>p.views>=200?engOf(p)/p.views:0);
+  const hl=(ic,lab,p,val)=>p?`<div class="hl"><div class="hl-ic">${ic}</div><div><small>${lab}</small>${esc(p.title)}<small>${esc(p.platform)} · ${fmtDate(p.date)}</small></div><div class="r">${val}</div></div>`:"";
+  document.getElementById("highlights").innerHTML=(hl("🏆","Top post",tv,tv?nk(tv.views)+" views":"")+hl("🔖","Most saved & shared",ts,ts?nk(ts.saves+ts.shares):"")+hl("💬","Best engagement",te,te&&te.views?pct(engOf(te)/te.views):""))||`<div class="empty">Nothing yet.</div>`;
+}
+function exportCSV(){
+  const a=acct(),D=data(),now=Date.now(),cur=D.posts.filter(p=>inRange(p,now-range*DAY,now)).sort((x,y)=>Date.parse(y.date)-Date.parse(x.date));
+  const rows=[["Date","Platform","Format","Niche","Title","Views","Likes","Comments","Shares","Saves","Engagement rate","Link"],...cur.map(p=>[dkey(p.date),p.platform,p.format,p.niche||"",p.title,p.views,p.likes,p.comments,p.shares,p.saves,p.views?(engOf(p)/p.views*100).toFixed(2)+"%":"",p.url])];
+  download(`${a.name.replace(/\W+/g,"-")}-analytics-${range}d-${dkey(now)}${D.mode==="demo"?"-DEMO":""}.csv`,"﻿"+toCSV(rows),"text/csv");
+}
+
+/* ================= PLATFORMS ================= */
+function renderPlatforms(){
+  const a=acct(),D=data(),now=Date.now(),from=now-range*DAY,pfrom=from-range*DAY;
+  document.getElementById("plat-range").textContent=`Last ${range} days`;
+  const rows=[];
+  document.getElementById("plat-grid").innerHTML=PLATS.map(p=>{
+    const all=D.posts.filter(x=>x.platform===p),cur=all.filter(x=>inRange(x,from,now)),prev=all.filter(x=>inRange(x,pfrom,from)),s=stats(cur),sp=stats(prev),p90=all.filter(x=>inRange(x,now-90*DAY,now));
+    const st=D.mode==="demo"?["Demo","s-planned"]:D.errors&&D.errors[p]?["Error","s-followup"]:D.followers[p]!=null?["Live","s-done"]:["Not connected","s-progress"];
+    const bf=groupAvg(p90,"format",2)[0],bn=groupAvg(p90.filter(x=>x.niche!=="Other"),"niche",2)[0],top=[...cur].sort((x,y)=>y.views-x.views)[0];
+    rows.push([p,D.followers[p],s,sp]);
+    return `<div class="panel"><div class="panel-h"><h2 style="color:${PCOLOR[p]}">${p}</h2><span class="status ${st[1]}">${st[0]}</span></div>
+      ${D.errors&&D.errors[p]?`<div class="note bad" style="margin-top:-4px">${esc(D.errors[p])}</div>`:""}
+      ${st[0]==="Not connected"?`<div class="empty">Not connected. <a href="#" onclick="go('settings');return false">Connect ${p} →</a></div>`:`
+      <div class="mini"><div><b>${D.followers[p]!=null?D.followers[p].toLocaleString():"—"}</b><small>Followers</small></div><div><b>${nk(s.views)}</b><small>Views ${deltaBadge(s.views,sp.views)}</small></div>
+      <div><b>${s.posts}</b><small>Posts</small></div><div><b>${pct(s.eng)}</b><small>Engagement (benchmark ~${pct(BENCH[p])})</small></div></div>
+      <div class="meta">📈 Avg views / post: <b>${s.posts?nk(s.views/s.posts):"—"}</b><br>🎞 Best format (90d): <b>${bf?esc(bf.k)+" · "+nk(bf.avg)+" avg":"—"}</b><br>🎯 Best niche (90d): <b>${bn?esc(bn.k)+" · "+nk(bn.avg)+" avg":"—"}</b><br>🏆 Top post: <b>${top?esc(top.title)+" · "+nk(top.views):"—"}</b></div>`}</div>`;}).join("");
+  document.getElementById("plat-table").innerHTML=`<table><thead><tr><th>Platform</th><th class="num">Followers</th><th class="num">Views</th><th class="num">Prev. views</th><th class="num">Posts</th><th class="num">Views / post</th><th class="num">Engagement</th></tr></thead><tbody>${rows.map(([p,f,s,sp])=>`<tr><td><span class="tag ${p==="TikTok"?"tt":"ig"}">${p}</span></td><td class="num">${f!=null?f.toLocaleString():"—"}</td><td class="num">${nk(s.views)}</td><td class="num">${nk(sp.views)}</td><td class="num">${s.posts}</td><td class="num">${s.posts?nk(s.views/s.posts):"—"}</td><td class="num">${pct(s.eng)}</td></tr>`).join("")}</tbody></table>`;
+}
+
+/* ================= FULL AUDIT ================= */
+let lastAudit=null;
+function runAudit(){
+  const a=acct(),D=data(),now=Date.now(),items=[],add=(kind,title,detail="")=>items.push({kind,title,detail});
+  const P=(f,t)=>D.posts.filter(p=>inRange(p,f,t));
+  const p30=P(now-30*DAY,now),pp30=P(now-60*DAY,now-30*DAY),p90=P(now-90*DAY,now),p28=P(now-28*DAY,now),s30=stats(p30),sp30=stats(pp30);
+  if(D.mode==="demo")add("info","This audit is running on demo numbers","Connect Instagram and TikTok in Settings & Connections to audit your real accounts.");
+  // 1. views trend
+  const ch=sp30.views?(s30.views-sp30.views)/sp30.views*100:null;
+  if(ch===null)add("info","Not enough history yet to compare views",`${nk(s30.views)} views from ${s30.posts} posts in the last 30 days.`);
+  else if(ch>=10)add("win",`Views up ${ch.toFixed(0)}% vs the previous 30 days`,`${nk(s30.views)} views from ${s30.posts} posts (was ${nk(sp30.views)} from ${sp30.posts}).`);
+  else if(ch<=-10)add("fix",`Views down ${Math.abs(ch).toFixed(0)}% vs the previous 30 days`,`${nk(s30.views)} views from ${s30.posts} posts (was ${nk(sp30.views)} from ${sp30.posts}). Post more often and repeat the formats and niches that win below.`);
+  else add("info",`Views steady (${ch>=0?"+":""}${ch.toFixed(0)}%) vs the previous 30 days`,`${nk(s30.views)} views from ${s30.posts} posts.`);
+  // 2. consistency
+  const goal=a.target*4,cons=p28.length/goal;
+  if(cons>=.9)add("win",`Consistent posting: ${p28.length} of ${goal} planned posts in 4 weeks`,"Keep the rhythm — consistency is what the algorithms reward most.");
+  else add(cons<.6?"fix":"info",`Posting consistency ${Math.round(cons*100)}% (${p28.length} of ${goal} posts in 4 weeks)`,`Add about ${Math.max(1,Math.ceil((goal-p28.length)/4))} more post(s) per week. Batch-shoot extra clips during jobs and queue them in the Bengkel.`);
+  // 3. best day
+  const days=dayAvgs(p90),avg=p90.length?sum(p90,p=>p.views)/p90.length:0,bi=days.indexOf(Math.max(...days));
+  if(avg&&days[bi]/avg>=1.2)add("idea",`Post your hero content on ${DAYN[bi]}`,`${DAYN[bi]} posts average ${nk(days[bi])} views — ${(days[bi]/avg).toFixed(1)}× your overall average.`);
+  // 4. format
+  const fm=groupAvg(p90,"format",2);
+  if(fm.length>=2){const b=fm[0],w=fm[fm.length-1];add("idea",`${b.k}s beat ${w.k}s by ${(b.avg/Math.max(1,w.avg)).toFixed(1)}×`,`${b.k}: ${nk(b.avg)} avg views (${b.n} posts) vs ${w.k}: ${nk(w.avg)} (${w.n} posts). Put more effort into ${b.k}s.`);}
+  // 5. niche
+  const nm=groupAvg(p90.filter(p=>p.niche&&p.niche!=="Other"),"niche",2);
+  if(nm.length>=2){const b=nm[0],w=nm[nm.length-1];add("idea",`${b.k} is your strongest niche on social`,`${b.k} content averages ${nk(b.avg)} views; ${w.k} averages ${nk(w.avg)}. Lead with ${b.k} and use it to promote your ${w.k} packages.`);}
+  // 6. platform efficiency
+  const pm=groupAvg(p90,"platform",2);
+  if(pm.length>=2)add("idea",`${pm[0].k} gives ${(pm[0].avg/Math.max(1,pm[1].avg)).toFixed(1)}× more views per post than ${pm[1].k}`,`Repurpose your best ${pm[1].k} posts onto ${pm[0].k} — same content, extra reach.`);
+  else if(pm.length===1)add("fix",`You're only active on ${pm[0].k}`,"Repurpose the same edits to a second platform for extra reach at almost no cost.");
+  // 7. engagement vs benchmark
+  PLATS.forEach(pl=>{const ps=p30.filter(p=>p.platform===pl);if(ps.length<2)return;const r=stats(ps).eng,bm=BENCH[pl];
+    if(r>=bm)add("win",`${pl} engagement ${pct(r)} — above the ~${pct(bm)} benchmark`,"Your audience is reacting. Keep the same hooks and caption style.");
+    else add("fix",`${pl} engagement ${pct(r)} — below the ~${pct(bm)} benchmark`,"Hook in the first second / first slide, show faces and emotion early, and end captions with a question.");});
+  // 8. most useful post
+  const tu=[...p90].sort((x,y)=>(y.saves+y.shares)-(x.saves+x.shares))[0];
+  if(tu&&tu.saves+tu.shares>0)add("idea",`Make a part 2 of “${tu.title}”`,`It earned ${nk(tu.saves)} saves and ${nk(tu.shares)} shares on ${tu.platform} — people found it worth keeping.`);
+  // 9. gaps
+  const ts=p90.map(p=>Date.parse(p.date)).sort((x,y)=>x-y);let gap=0,gs=0;
+  for(let i=1;i<ts.length;i++)if(ts[i]-ts[i-1]>gap){gap=ts[i]-ts[i-1];gs=ts[i-1];}
+  if(ts.length&&now-ts[ts.length-1]>gap){gap=now-ts[ts.length-1];gs=ts[ts.length-1];}
+  if(gap>=7*DAY)add("fix",`Longest silence: ${Math.round(gap/DAY)} days without posting`,`Starting ${fmtDate(gs)}. Keep 2–3 evergreen posts ready in the Content Bank for busy job weeks.`);
+  // 10. pipeline
+  const ideas=content.filter(c=>c.st==="Idea").length,sched=content.filter(c=>c.due&&c.due>=dkey(now)&&c.st!=="Posted").length;
+  if(ideas+sched<a.target*2)add("fix",`Content pipeline is thin (${ideas} ideas, ${sched} scheduled)`,`You need about ${a.target*2} pieces ready for the next 2 weeks. Pull ideas from Trending Topics.`);
+  else add("win",`Healthy pipeline: ${ideas} ideas and ${sched} scheduled`,"Enough content queued for the next two weeks.");
+  const stuck=bengkel.filter(b=>b.ck.some(c=>!c[1]));
+  if(stuck.length)add("info",`${stuck.length} draft${stuck.length>1?"s":""} still in the Bengkel`,stuck.map(b=>`${b.t} (${b.ck.filter(c=>c[1]).length}/${b.ck.length} done)`).join("; "));
+  const fresh=TRENDS.find(t=>!content.some(c=>c.t===t[0]));
+  if(fresh)add("idea",`Try a trending topic: ${fresh[0]}`,`${fresh[2]} (${fresh[1]})`);
+  // 11. leads
+  const waiting=leads.filter(l=>l.status==="New"||l.status==="Follow Up");
+  if(waiting.length)add("fix",`${waiting.length} lead${waiting.length>1?"s":""} waiting for a reply`,waiting.map(l=>`${l.name} (${l.status})`).join(", "));
+  // score
+  const engScore=PLATS.map(pl=>{const ps=p30.filter(p=>p.platform===pl);return ps.length?Math.min(1,stats(ps).eng/BENCH[pl]):null;}).filter(x=>x!=null);
+  const score=Math.round(25*Math.min(1,cons)+20*(ch===null?.5:Math.max(0,Math.min(1,(ch+30)/60)))+20*(engScore.length?engScore.reduce((x,y)=>x+y,0)/engScore.length:.5)+15*(pm.length>=2?1:pm.length?.5:0)+10*Math.min(1,(ideas+sched)/(a.target*2))+10*(leads.length?1-waiting.length/leads.length:1));
+  lastAudit={score,items,generatedAt:now,account:a.name,mode:D.mode};renderAudit();
+}
+function renderAudit(){
+  const el=document.getElementById("audit-out");if(!lastAudit)return;
+  const {score,items,generatedAt,account,mode}=lastAudit,col=score>=75?"var(--sage)":score>=50?"var(--sand)":"var(--blush)";
+  const sec=(kind,title)=>{const xs=items.filter(i=>i.kind===kind);return xs.length?`<div class="a-sec"><h2 style="margin-bottom:8px">${title}</h2>${xs.map(i=>`<div class="a-item ${kind}"><b>${esc(i.title)}</b><span>${esc(i.detail)}</span></div>`).join("")}</div>`:"";};
+  el.innerHTML=`<div class="panel"><div class="audit-top"><div class="score" style="background:${col}">${score}<small>/ 100</small></div>
+    <div><h2>${esc(account)} — audit ${mode==="demo"?"(demo data)":""}</h2><div class="meta">Generated ${new Date(generatedAt).toLocaleString("en-GB")} · ${items.filter(i=>i.kind==="win").length} working · ${items.filter(i=>i.kind==="fix").length} to fix · ${items.filter(i=>i.kind==="idea").length} opportunities</div>
+    <div class="meta" style="margin-top:6px">Score = consistency 25 · growth 20 · engagement 20 · platform reach 15 · pipeline 10 · lead replies 10.</div></div></div></div>
+    ${sec("fix","🔧 Fix next")}${sec("idea","💡 Opportunities — what to make next")}${sec("win","✅ What's working")}${sec("info","ℹ️ Notes")}`;
+  document.getElementById("btn-audit-dl").disabled=false;
+}
+function downloadAudit(){
+  if(!lastAudit)return;const {score,items,generatedAt,account,mode}=lastAudit;
+  const part=(kind,t)=>{const xs=items.filter(i=>i.kind===kind);return xs.length?`\n## ${t}\n\n`+xs.map(i=>`- **${i.title}**${i.detail?" — "+i.detail:""}`).join("\n")+"\n":"";};
+  download(`${account.replace(/\W+/g,"-")}-audit-${dkey(generatedAt)}.md`,`# ${account} — social media audit${mode==="demo"?" (demo data)":""}\n\nGenerated ${new Date(generatedAt).toLocaleString("en-GB")}\n\n**Score: ${score} / 100**\n`+part("fix","Fix next")+part("idea","Opportunities")+part("win","What's working")+part("info","Notes"),"text/markdown");
+}
+
+/* ================= CONTENT CALENDAR + NOTION ================= */
+let calMonth=new Date();calMonth.setDate(1);
+let N=LS.get("kk.notion",{items:[],syncedAt:0,source:""});
+function shiftMonth(n){calMonth.setMonth(calMonth.getMonth()+n);renderCalendar();}
+function renderCalendar(){
+  const y=calMonth.getFullYear(),m=calMonth.getMonth(),first=new Date(y,m,1),startDow=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate();
+  document.getElementById("cal-title").textContent=first.toLocaleDateString("en-GB",{month:"long",year:"numeric"});
+  const ev={},push=(k,html)=>{(ev[k]=ev[k]||[]).push(html);};
+  content.filter(c=>c.due).forEach(c=>push(c.due,`<span class="ev local" title="${esc(c.t)} · ${esc(c.platform)} · ${esc(c.st)}">${esc(c.t)}</span>`));
+  N.items.filter(i=>i.date).forEach(i=>push(i.date,`<${i.url?`a href="${esc(i.url)}" target="_blank" rel="noopener noreferrer"`:"span"} class="ev notion" title="Notion · ${esc(i.title)}${i.status?" · "+esc(i.status):""}${i.platform?" · "+esc(i.platform):""}">◧ ${esc(i.title)}</${i.url?"a":"span"}>`));
+  data().posts.forEach(p=>push(dkey(p.date),`<span class="ev posted-${p.platform==="TikTok"?"tt":"ig"}" title="Posted on ${esc(p.platform)} · ${nk(p.views)} views">✓ ${esc(p.title)}</span>`));
+  const cells=Math.ceil((startDow+dim)/7)*7,today=dkey(Date.now());
+  let h=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d=>`<div class="dow">${d}</div>`).join("");
+  for(let i=0;i<cells;i++){const d=new Date(y,m,i-startDow+1),k=dkey(d),list=ev[k]||[];
+    h+=`<div class="day ${d.getMonth()!==m?"out":""} ${k===today?"today":""}"><div class="dn">${d.getDate()}</div>${list.slice(0,4).join("")}${list.length>4?`<span class="meta">+${list.length-4} more</span>`:""}</div>`;}
+  document.getElementById("cal").innerHTML=h;
+  const un=[...content.filter(c=>!c.due).map(c=>`💡 ${esc(c.t)}`),...N.items.filter(i=>!i.date).map(i=>`◧ ${esc(i.title)} (Notion)`)];
+  document.getElementById("cal-unsched").innerHTML=un.length?un.join("<br>"):"Everything has a date. 👌";
+}
+function setNotionMsg(t,cls=""){const el=document.getElementById("notion-msg");el.className="note "+cls;el.textContent=t;}
+const notionDbId=()=>{const s=(S.notion.db||"").split("?")[0].replace(/-/g,"").trim(),m=s.match(/[0-9a-f]{32}$/i);return m?m[0]:"";};
+async function relayFetch(path,opt={}){
+  if(!S.relay.url)throw new Error("Set your relay URL in Settings & Connections first (Notion blocks direct browser access). Meanwhile you can use the CSV buttons.");
+  const r=await fetch(S.relay.url.replace(/\/+$/,"")+path,{...opt,headers:{"Content-Type":"application/json","X-Relay-Key":S.relay.key||"",...(opt.headers||{})}});
+  let d={};try{d=await r.json();}catch(e){}
+  if(!r.ok)throw new Error(d.message||d.error||("HTTP "+r.status));return d;
+}
+function propText(p){if(!p)return "";switch(p.type){
+  case "title":return p.title.map(t=>t.plain_text).join("");case "rich_text":return p.rich_text.map(t=>t.plain_text).join("");
+  case "select":return p.select?p.select.name:"";case "status":return p.status?p.status.name:"";
+  case "multi_select":return p.multi_select.map(o=>o.name).join(", ");case "date":return p.date?p.date.start:"";default:return "";}}
+async function notionPull(silent){
+  const db=notionDbId();
+  if(!db){setNotionMsg("Add your Notion database link in Settings & Connections first.","bad");return false;}
+  const b=document.getElementById("btn-npull");b.disabled=true;if(!silent)setNotionMsg("Pulling from Notion…");
+  try{
+    let cursor=null;const items=[];
+    do{const d=await relayFetch(`/notion/v1/databases/${db}/query`,{method:"POST",body:JSON.stringify(cursor?{page_size:100,start_cursor:cursor}:{page_size:100})});
+      (d.results||[]).forEach(pg=>{const pr=pg.properties||{},titleKey=pr[S.notion.title]?S.notion.title:Object.keys(pr).find(k=>pr[k].type==="title");
+        items.push({id:pg.id,title:propText(pr[titleKey])||"(untitled)",date:(propText(pr[S.notion.date])||"").slice(0,10),status:propText(pr[S.notion.status]),platform:propText(pr[S.notion.platform]),url:pg.url||""});});
+      cursor=d.has_more?d.next_cursor:null;}while(cursor&&items.length<2000);
+    N={items,syncedAt:Date.now(),source:"Notion"};LS.set("kk.notion",N);
+    if(!silent)setNotionMsg(`✓ Pulled ${items.length} item${items.length===1?"":"s"} from Notion.`,"ok");renderCalendar();renderPills();return true;
+  }catch(e){setNotionMsg("Notion pull failed: "+e.message,"bad");return false;}finally{b.disabled=false;}
+}
+async function notionPush(){
+  const db=notionDbId();if(!db){setNotionMsg("Add your Notion database link in Settings & Connections first.","bad");return;}
+  const b=document.getElementById("btn-npush");b.disabled=true;setNotionMsg("Pushing to Notion…");
+  try{
+    const schema=(await relayFetch(`/notion/v1/databases/${db}`)).properties||{};
+    if(!(await notionPull(true)))return;
+    const have=new Set(N.items.map(i=>(i.title+"|"+i.date).toLowerCase())),todo=content.filter(c=>!have.has((c.t+"|"+(c.due||"")).toLowerCase()));
+    const titleKey=schema[S.notion.title]&&schema[S.notion.title].type==="title"?S.notion.title:Object.keys(schema).find(k=>schema[k].type==="title");
+    const val=(key,v)=>{const p=schema[key];if(!p||!v)return null;switch(p.type){
+      case "date":return {date:{start:v}};case "select":return {select:{name:v}};case "status":return {status:{name:v}};
+      case "multi_select":return {multi_select:v.split(/[,+]/).map(x=>({name:x.trim()})).filter(x=>x.name)};case "rich_text":return {rich_text:[{text:{content:v}}]};default:return null;}};
+    let ok=0,fail=[];
+    for(const c of todo){
+      const props={[titleKey]:{title:[{text:{content:c.t}}]}};
+      [[S.notion.date,c.due],[S.notion.status,c.st],[S.notion.platform,c.platform]].forEach(([k,v])=>{const x=val(k,v);if(x)props[k]=x;});
+      try{await relayFetch("/notion/v1/pages",{method:"POST",body:JSON.stringify({parent:{database_id:db},properties:props})});ok++;}
+      catch(e){ // a Notion "Status" column only accepts its existing options — retry without it
+        if(props[S.notion.status]){delete props[S.notion.status];try{await relayFetch("/notion/v1/pages",{method:"POST",body:JSON.stringify({parent:{database_id:db},properties:props})});ok++;continue;}catch(e2){e=e2;}}
+        fail.push(c.t+": "+e.message);}
+    }
+    await notionPull(true);
+    setNotionMsg(`✓ Pushed ${ok} new item${ok===1?"":"s"} to Notion (${content.length-todo.length} already there).${fail.length?" Failed: "+fail.join("; "):""}`,fail.length?"bad":"ok");
+  }catch(e){setNotionMsg("Notion push failed: "+e.message,"bad");}finally{b.disabled=false;}
+}
+function exportNotionCSV(){
+  const n=S.notion;download(`content-calendar-${dkey(Date.now())}.csv`,"﻿"+toCSV([[n.title,n.date,n.status,n.platform],...content.map(c=>[c.t,c.due||"",c.st,c.platform])]),"text/csv");
+  setNotionMsg("CSV downloaded. In Notion: open your database → ••• → Merge with CSV.","ok");
+}
+function importNotionCSV(inp){
+  const f=inp.files&&inp.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{const rows=parseCSV(String(rd.result));inp.value="";if(rows.length<2){setNotionMsg("That CSV has no rows.","bad");return;}
+    const hd=rows[0].map(x=>x.trim().toLowerCase()),col=name=>hd.indexOf(String(name).toLowerCase());
+    const ti=col(S.notion.title)>=0?col(S.notion.title):0,di=col(S.notion.date),si=col(S.notion.status),pi=col(S.notion.platform);
+    const toDate=v=>{v=(v||"").split("→")[0].trim();if(!v)return "";if(/^\d{4}-\d{2}-\d{2}/.test(v))return v.slice(0,10);const t=Date.parse(v);return isNaN(t)?"":dkey(t);};
+    const items=rows.slice(1).map((r,i)=>({id:"csv"+i,title:r[ti]||"(untitled)",date:di>=0?toDate(r[di]):"",status:si>=0?r[si]:"",platform:pi>=0?r[pi]:"",url:""}));
+    N={items,syncedAt:Date.now(),source:"Notion CSV"};LS.set("kk.notion",N);setNotionMsg(`✓ Imported ${items.length} items from the Notion CSV.`,"ok");renderCalendar();renderPills();};
+  rd.readAsText(f);
+}
+
+/* ================= SETTINGS ================= */
+function renderSettings(){
+  const sel=(k,opts,v)=>`<select data-k="${k}">${opts.map(([val,lab])=>`<option value="${val}" ${val===v?"selected":""}>${lab}</option>`).join("")}</select>`;
+  document.getElementById("settings-body").innerHTML=`
+  <div class="panel"><h3>General</h3>
+    <div class="row2" style="margin-top:8px"><div><label>Your name (for the greeting)</label><input id="set-owner" value="${esc(S.owner)}" placeholder="e.g. Farzel"></div></div>
+    <label class="ckline"><input type="checkbox" id="set-auto" ${S.autoRefresh?"checked":""}> Auto-refresh analytics every 15 minutes while this page is open</label></div>
+  ${S.accounts.map((a,i)=>`<div class="panel acct-set" data-i="${i}">
+    <div class="panel-h"><h3>Account ${i+1}${a.id===S.current?" · showing now":""}</h3>${S.accounts.length>1?`<button class="del" style="margin:0" onclick="removeAccount('${a.id}')">Remove account</button>`:""}</div>
+    <div class="row2"><div><label>Account name</label><input data-k="name" value="${esc(a.name)}"></div><div><label>Handle</label><input data-k="handle" value="${esc(a.handle)}" placeholder="filled in automatically"></div><div style="max-width:170px"><label>Target posts / week</label><input data-k="target" type="number" min="1" value="${a.target}"></div></div>
+    <h4>Instagram (Business or Creator account)</h4>
+    <div class="row2"><div><label>Login type</label>${sel("igHost",[["graph.instagram.com","Instagram Login — graph.instagram.com"],["graph.facebook.com","Facebook Login — graph.facebook.com"]],a.igHost)}</div><div><label>Instagram user ID</label><input data-k="igUser" value="${esc(a.igUser)}" placeholder="me"></div></div>
+    <div><label>Access token</label><input data-k="igToken" type="password" autocomplete="off" value="${esc(a.igToken)}" placeholder="paste long-lived token"></div>
+    <h4>TikTok</h4>
+    <div class="row2"><div><label>Connection</label>${sel("ttMode",[["direct","Direct — paste an access token (expires every 24h)"],["relay","Through my relay — refreshes automatically"]],a.ttMode)}</div><div><label>Access token (direct only)</label><input data-k="ttToken" type="password" autocomplete="off" value="${esc(a.ttToken)}"></div></div>
+    <div class="row-actions"><button class="btn btn-sm" onclick="testAccount(${i})">Save &amp; test connection</button><button class="btn-ghost btn-sm" onclick="disconnect(${i})">Disconnect</button><span class="test-out" id="test-${i}"></span></div>
+  </div>`).join("")}
+  <div><button class="btn-ghost" onclick="addAccount()">+ Add another account</button></div>
+  <div class="panel"><h3>Your relay (for TikTok auto-refresh and Notion)</h3>
+    <p>Notion does not allow websites to talk to it directly, and TikTok tokens expire daily. The relay is a tiny script <b>you own</b> (file <code>relay/worker.js</code> in this project) that keeps those secret keys on your side and passes requests through. Setup steps are in <code>relay/README.md</code>.</p>
+    <div class="row2"><div><label>Relay URL</label><input id="set-relay-url" value="${esc(S.relay.url)}" placeholder="https://kenangkala-relay.yourname.workers.dev"></div><div><label>Relay key (the RELAY_KEY you chose)</label><input id="set-relay-key" type="password" autocomplete="off" value="${esc(S.relay.key)}"></div></div>
+    <div class="row-actions"><button class="btn btn-sm" onclick="testRelay()">Save &amp; test relay</button><span class="test-out" id="test-relay"></span></div></div>
+  <div class="panel"><h3>Notion content calendar</h3>
+    <p>Paste the link to your Notion database, then share that database with your Notion integration. Column names must match your database.</p>
+    <div><label>Notion database link or ID</label><input id="set-n-db" value="${esc(S.notion.db)}" placeholder="https://www.notion.so/…"></div>
+    <div class="row2" style="margin-top:10px"><div><label>Title column</label><input id="set-n-title" value="${esc(S.notion.title)}"></div><div><label>Date column</label><input id="set-n-date" value="${esc(S.notion.date)}"></div><div><label>Status column</label><input id="set-n-status" value="${esc(S.notion.status)}"></div><div><label>Platform column</label><input id="set-n-platform" value="${esc(S.notion.platform)}"></div></div>
+    <div class="row-actions"><button class="btn btn-sm" onclick="saveSettings();go('calendar');notionPull()">Save &amp; pull from Notion</button></div></div>
+  <div class="panel"><h3>Privacy</h3>
+    <p>Tokens and keys live only in this browser's storage on this device. They are never put into the website files on GitHub. Anyone who uses this browser profile could see them, so use your own device. The page loads no outside fonts, images, trackers or scripts.</p>
+    <div class="row-actions"><button class="btn-ghost btn-sm" onclick="clearAll()">Delete all saved settings, tokens &amp; history from this browser</button></div></div>
+  <div class="row-actions"><button class="btn" onclick="saveSettings(true)">Save settings</button><span class="test-out" id="save-out"></span></div>`;
+}
+function readSettingsForm(){
+  const v=id=>{const el=document.getElementById(id);return el?el.value.trim():"";};
+  if(!document.getElementById("set-owner"))return;
+  S.owner=v("set-owner");S.autoRefresh=document.getElementById("set-auto").checked;
+  document.querySelectorAll(".acct-set").forEach(p=>{const a=S.accounts[+p.dataset.i];if(!a)return;
+    p.querySelectorAll("[data-k]").forEach(inp=>{const k=inp.dataset.k;a[k]=k==="target"?Math.max(1,parseInt(inp.value,10)||1):inp.value.trim();});
+    if(!a.name)a.name="Account";if(!a.igUser)a.igUser="me";});
+  S.relay={url:v("set-relay-url"),key:v("set-relay-key")};
+  S.notion={db:v("set-n-db"),title:v("set-n-title")||"Name",date:v("set-n-date")||"Date",status:v("set-n-status")||"Status",platform:v("set-n-platform")||"Platform"};
+}
+function saveSettings(msg){
+  readSettingsForm();saveS();S.accounts.forEach(a=>{if(!isConnected(a)||(A[a.id]&&A[a.id].mode==="demo"))delete A[a.id];});
+  renderAcct();renderPills();if(msg){const o=document.getElementById("save-out");o.className="test-out ok";o.textContent="✓ Saved in this browser";}
+}
+async function testAccount(i){
+  saveSettings();const a=S.accounts[i],out=document.getElementById("test-"+i);
+  if(!isConnected(a)){out.className="test-out bad";out.textContent="Add an Instagram token or a TikTok connection first.";return;}
+  out.className="test-out";out.textContent="Connecting…";
+  const D=await syncAccount(a),parts=[];
+  if(a.igToken)parts.push(D.errors.Instagram?`<span class="bad">✗ Instagram: ${esc(D.errors.Instagram)}</span>`:`<span class="ok">✓ Instagram: ${(D.followers.Instagram||0).toLocaleString()} followers, ${D.posts.filter(p=>p.platform==="Instagram").length} posts (6 months)</span>`);
+  if(ttOn(a))parts.push(D.errors.TikTok?`<span class="bad">✗ TikTok: ${esc(D.errors.TikTok)}</span>`:`<span class="ok">✓ TikTok: ${(D.followers.TikTok||0).toLocaleString()} followers, ${D.posts.filter(p=>p.platform==="TikTok").length} videos (6 months)</span>`);
+  out.innerHTML=parts.join("<br>");renderAnalytics();
+}
+async function testRelay(){
+  saveSettings();const out=document.getElementById("test-relay");out.className="test-out";out.textContent="Checking…";
+  try{const d=await relayFetch("/health");out.className="test-out ok";out.textContent=`✓ Relay is up — Notion ${d.notion?"ready":"not set"} · TikTok ${d.tiktok?"ready":"not set"}`;}
+  catch(e){out.className="test-out bad";out.textContent="✗ "+e.message;}
+}
+function disconnect(i){const a=S.accounts[i];a.igToken="";a.ttToken="";a.ttMode="direct";saveS();LS.del("kk.cache."+a.id);delete A[a.id];renderSettings();renderAnalytics();}
+function addAccount(){readSettingsForm();const a=newAccount("New account");S.accounts.push(a);S.current=a.id;saveS();renderSettings();renderAnalytics();}
+function removeAccount(id){if(!confirm("Remove this account and its saved history from this browser?"))return;readSettingsForm();S.accounts=S.accounts.filter(a=>a.id!==id);["kk.cache.","kk.snap."].forEach(k=>LS.del(k+id));delete A[id];if(S.current===id)S.current=S.accounts[0].id;saveS();renderSettings();renderAnalytics();}
+function clearAll(){if(!confirm("Delete every saved setting, token and history from this browser?"))return;Object.keys(localStorage).filter(k=>k.startsWith("kk.")).forEach(k=>LS.del(k));location.reload();}
+
+/* ================= ACCOUNT SWITCHER, PILLS, SEARCH, NAV ================= */
+function renderAcct(){
+  const a=acct(),ini=a.name.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  document.getElementById("acct-av").textContent=ini||"KS";document.getElementById("acct-name").textContent=a.name;
+  document.getElementById("acct-handle").textContent=a.handle?"@"+a.handle.replace(/^@/,""):isConnected(a)?"connected":"demo · not connected";
+  document.getElementById("acct-menu").innerHTML=S.accounts.map(x=>`<button class="${x.id===a.id?"on":""}" onclick="switchAccount('${x.id}')"><span class="av" style="width:24px;height:24px;font-size:10px">${esc(x.name.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase())}</span>${esc(x.name)}${x.id===a.id?" ✓":""}</button>`).join("")+`<hr><button onclick="addAccount();go('settings')">+ Add account</button><button onclick="go('settings')">⚙️ Manage connections</button>`;
+}
+function switchAccount(id){S.current=id;saveS();document.getElementById("acct-menu").classList.remove("open");renderAnalytics();if(isConnected(acct())&&!(A[id]&&A[id].fetchedAt&&!A[id].stale))refreshNow();}
+document.getElementById("acct-btn").addEventListener("click",e=>{e.stopPropagation();document.getElementById("acct-menu").classList.toggle("open");});
+function renderPills(){
+  const D=data(),pd=document.getElementById("pill-data"),pn=document.getElementById("pill-notion"),errs=Object.keys(D.errors||{});
+  if(D.mode==="demo"){pd.className="pill";pd.textContent="Demo data";}
+  else if(D.loading){pd.className="pill";pd.textContent="⟳ Syncing…";}
+  else if(errs.length){pd.className="pill warn";pd.textContent="⚠ "+errs.join(", ")+" issue";}
+  else{pd.className="pill live";pd.textContent="● Live · synced "+new Date(D.fetchedAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});}
+  pn.className="pill"+(N.syncedAt?" live":"");pn.textContent=N.syncedAt?`◧ ${N.source} synced ${fmtDate(N.syncedAt)}`:"◧ Notion not linked";
+}
+function go(view){
+  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.toggle("active",x.dataset.view===view));
+  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id==="view-"+view));
+  if(view==="settings")renderSettings();
+  document.querySelector("main").scrollTop=0;
+}
+document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>go(b.dataset.view)));
+document.querySelectorAll("#range-seg button").forEach(b=>b.addEventListener("click",()=>{range=+b.dataset.r;LS.set("kk.range",range);renderOverview();renderPlatforms();}));
+const qEl=document.getElementById("q"),qRes=document.getElementById("search-res");
+function searchAll(q){q=q.toLowerCase();const R=[],add=(view,icon,title,sub)=>{if(R.length<12&&(title+" "+sub).toLowerCase().includes(q))R.push({view,icon,title,sub});};
+  jobs.forEach(j=>add("jobs","🗓",j.name,j.venue+" · "+j.niche));leads.forEach(l=>add("leads","💬",l.name,l.service+" · "+l.status));
+  content.forEach(c=>add("content","💡",c.t,c.platform+" · "+fmtDate(c.due)));poses.forEach(p=>add("poses","🧍",p.t,p.niche));
+  packages.forEach(p=>add("packages","💰",p.name,p.niche+" · RM"+p.price));TRENDS.forEach(t=>add("trends","📈",t[0],t[1]));
+  N.items.forEach(i=>add("calendar","◧",i.title,"Notion · "+(i.date?fmtDate(i.date):"no date")));
+  data().posts.forEach(p=>add("overview",p.platform==="TikTok"?"🎵":"📷",p.title,`${p.platform} · ${fmtDate(p.date)} · ${nk(p.views)} views`));return R;}
+qEl.addEventListener("input",()=>{const q=qEl.value.trim();if(!q){qRes.classList.remove("open");return;}
+  const r=searchAll(q);qRes.innerHTML=r.length?r.map(x=>`<button onclick="go('${x.view}');qRes.classList.remove('open')">${x.icon} ${esc(x.title)}<small>${esc(x.sub)}</small></button>`).join(""):`<div class="meta" style="padding:8px">No matches.</div>`;qRes.classList.add("open");});
+qEl.addEventListener("keydown",e=>{if(e.key==="Escape"){qRes.classList.remove("open");qEl.blur();}});
+document.addEventListener("click",e=>{if(!e.target.closest(".search"))qRes.classList.remove("open");if(!e.target.closest(".acct"))document.getElementById("acct-menu").classList.remove("open");});
+document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();qEl.focus();}});
 setInterval(()=>{document.getElementById("clock").textContent="🕒 "+new Date().toLocaleTimeString();renderJobs();renderDashboard();},15000);
 setInterval(()=>{document.getElementById("clock").textContent="🕒 "+new Date().toLocaleTimeString();},1000);
 
@@ -369,7 +1159,7 @@ function renderJobDetail(){
   const fitPoses=poses.filter(p=>p.on&&(p.niche===j.niche||j.niche==="Wedding"&&["Wedding","Tunang"].includes(p.niche)));
   el.innerHTML=`<div class="brief">
     <h2>📂 Job brief — ${esc(j.name)}</h2>
-    <p class="maplink" style="margin:6px 0 10px"><a href="${mapsUrl(j.venue)}" target="_blank">🗺 Google Maps directions → ${esc(j.venue)}</a> · <a href="https://www.google.com/maps/search/${encodeURIComponent("outdoor photoshoot near "+j.venue)}" target="_blank">find outdoor spots nearby ↗</a></p>
+    <p class="maplink" style="margin:6px 0 10px"><a href="${mapsUrl(j.venue)}" target="_blank" rel="noopener noreferrer">🗺 Google Maps directions → ${esc(j.venue)}</a> · <a href="https://www.google.com/maps/search/${encodeURIComponent("outdoor photoshoot near "+j.venue)}" target="_blank" rel="noopener noreferrer">find outdoor spots nearby ↗</a></p>
     ${pic(j.niche.toLowerCase()+"-venue","📍 Location — "+j.venue,520,220)}
     <h3>🎯 Posing style</h3><li>${esc(B.style)}</li>
     <h3>📸 Shotlist</h3>${B.shotlist.map(s=>`<li>${esc(s)}</li>`).join("")}
@@ -408,9 +1198,9 @@ function renderLeads(){
     div.innerHTML=`<div class="title">${esc(l.name)}</div>
       <div class="meta">🛎 <b>${esc(l.service)}</b> · 📱 ${esc(l.phone||"—")} · @${esc(l.ig||"—")}<br>📝 Chat summary: ${esc(l.note||"—")}${l.quote?`<br>🧾 Quotation pushed: <b>${esc(l.quote)}</b>`:""}</div>
       <div class="foot"><span class="status ${statusClass(l.status)}" onclick="cycleLead(${l.id})" style="cursor:pointer">${l.status} ▸</span>
-      <a class="btn-ghost btn-sm" href="${waLink(l)}" target="_blank">WhatsApp ↗</a>
-      <a class="btn-ghost btn-sm" href="https://instagram.com/${encodeURIComponent(l.ig||"")}" target="_blank">IG ↗</a>
-      <a class="btn-ghost btn-sm" href="https://www.threads.net/@${encodeURIComponent(l.ig||"")}" target="_blank">Threads ↗</a>
+      <a class="btn-ghost btn-sm" href="${esc(waLink(l))}" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
+      <a class="btn-ghost btn-sm" href="https://instagram.com/${encodeURIComponent(l.ig||"")}" target="_blank" rel="noopener noreferrer">IG ↗</a>
+      <a class="btn-ghost btn-sm" href="https://www.threads.net/@${encodeURIComponent(l.ig||"")}" target="_blank" rel="noopener noreferrer">Threads ↗</a>
       <button class="del" onclick="leads=leads.filter(x=>x.id!==${l.id});renderAll()">✕</button></div>
       <textarea style="width:100%;margin-top:8px;font-size:12px" rows="3" oninput="leads.find(x=>x.id===${l.id}).draft=this.value" placeholder="Reply draft (edit me) — opens pre-filled in WhatsApp">${esc(l.draft||draftFor(l))}</textarea>`;
     list.appendChild(div);
@@ -435,7 +1225,7 @@ function renderContent(){
     const div=document.createElement("div");div.className="card p";
     div.innerHTML=`<img class="ph" src="${img(c.seed)}" alt="${esc(c.t)}" onerror="this.style.display='none'">
       <div class="title" style="margin-top:8px">${esc(c.t)}</div>
-      <div class="meta">📺 ${esc(c.platform)} · 📅 ${esc(c.due)} · ${c.cx==="complex"?"🛠 needs Bengkel":"⚡ quick shoot"}</div>
+      <div class="meta">📺 ${esc(c.platform)} · 📅 ${fmtDate(c.due)} · ${c.cx==="complex"?"🛠 needs Bengkel":"⚡ quick shoot"}</div>
       <div class="foot"><span class="status ${statusClass(c.st)}" onclick="cycleContent(${c.id})" style="cursor:pointer">${c.st} ▸</span>
       <button class="btn-ghost btn-sm" title="Add to Pose DB" onclick="toPoseDB(${c.id})">🧍 + Pose DB</button>
       ${c.cx==="complex"?`<button class="btn-ghost btn-sm" onclick="toBengkel(${c.id})">🛠 Bengkel</button>`:""}
@@ -461,7 +1251,7 @@ function toBengkel(id){
 function addContent(){
   const g=id=>document.getElementById(id).value.trim();
   const t=g("in-c-title");if(!t)return;
-  content.push({id:Date.now(),t,platform:g("in-c-platform")||"—",due:g("in-c-due")||"—",st:"Idea",cx:g("in-c-cx"),seed:"idea-"+Math.floor(Math.random()*9999)});
+  content.push({id:Date.now(),t,platform:g("in-c-platform")||"—",due:g("in-c-due")||"",st:"Idea",cx:g("in-c-cx"),seed:"idea-"+Math.floor(Math.random()*9999)});
   ["in-c-title","in-c-platform","in-c-due"].forEach(i=>document.getElementById(i).value="");
   renderAll();
 }
@@ -469,7 +1259,7 @@ function addContent(){
 /* ================= BENGKEL ================= */
 function renderBengkel(){
   const list=document.getElementById("list-bengkel");list.innerHTML="";
-  if(!bengkel.length){list.innerHTML=`<div class="empty">No drafts in the workshop. Send a complex idea from Content 🛠</div>`;}
+  if(!bengkel.length){list.innerHTML=`<div class="empty">No drafts in the workshop. Send a complex idea from the Content Bank 🛠</div>`;}
   bengkel.forEach((b,bi)=>{
     const done=b.ck.filter(c=>c[1]).length;
     const div=document.createElement("div");div.className="card";
@@ -499,6 +1289,7 @@ function renderPackages(){
   document.getElementById("q-addons").innerHTML=addons.map((a,i)=>`<button class="pose-chip" id="qadd-${i}" onclick="this.classList.toggle('on')" style="cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:20px;padding:4px 12px;font-size:12px">${esc(a.name)} +RM${a.price}</button>`).join("");
   renderQuote();
 }
+function renderPkgBuilder(){renderQuote();}
 function addPackage(){
   const g=id=>document.getElementById(id).value.trim();
   const n=g("in-pkg-name");if(!n)return;
@@ -509,6 +1300,7 @@ function addPackage(){
 function renderQuote(){
   const sel=document.getElementById("q-pkg").value||"";
   const p=packages.find(x=>sel.includes(x.name))||packages[0];
+  if(!p){document.getElementById("quote-out").textContent="Add a package first.";return;}
   const chosen=addons.filter((a,i)=>document.getElementById("qadd-"+i)?.classList.contains("on"));
   const disc=+document.getElementById("q-disc").value||0;
   const sub=p.price+chosen.reduce((s,a)=>s+a.price,0);
@@ -569,15 +1361,15 @@ function addPose(){
 
 /* ================= TRENDS ================= */
 function renderTrends(){
-  document.getElementById("trend-cards").innerHTML=TRENDS.map(([t,p,d,seed])=>`
+  document.getElementById("trend-cards").innerHTML=TRENDS.map(([t,p,d,seed],i)=>`
     <div class="card p"><img class="ph" src="${img(seed)}" alt="${esc(t)}" onerror="this.style.display='none'">
     <div class="title" style="margin-top:8px">${esc(t)}</div>
     <div class="meta"><span class="tag">${esc(p)}</span><br><br>${esc(d)}</div>
-    <div class="foot"><button class="btn-ghost btn-sm" onclick="trendToContent('${t.replace(/'/g,"\\'")}')">→ Save to Content</button></div></div>`).join("");
+    <div class="foot"><button class="btn-ghost btn-sm" onclick="trendToContent(${i})">→ Save to Content Bank</button></div></div>`).join("");
 }
-function trendToContent(t){content.push({id:Date.now(),t,platform:"—",due:"—",st:"Idea",cx:"complex",seed:"idea-"+Math.floor(Math.random()*9999)});renderAll();}
+function trendToContent(i){const t=TRENDS[i][0];content.push({id:Date.now(),t,platform:"—",due:"",st:"Idea",cx:"complex",seed:"idea-"+Math.floor(Math.random()*9999)});renderAll();}
 
-/* ================= DASHBOARD ================= */
+/* ================= DASHBOARD (studio today) ================= */
 function renderDashboard(){
   document.getElementById("d-jobs").textContent=jobs.length;
   document.getElementById("d-leads").textContent=leads.length;
@@ -589,8 +1381,10 @@ function renderDashboard(){
 }
 
 /* ================= INIT ================= */
-function renderAll(){renderJobs();renderLeads();renderContent();renderBengkel();renderPackages();renderPoses();renderTrends();renderDashboard();}
-renderAll();
+function renderAnalytics(){renderAcct();renderPills();renderOverview();renderPlatforms();renderCalendar();}
+function renderAll(){renderJobs();renderLeads();renderContent();renderBengkel();renderPackages();renderPoses();renderTrends();renderDashboard();renderCalendar();}
+renderAll();renderAnalytics();
+if(isConnected(acct()))refreshNow();
 </script>
 </body>
 </html>
